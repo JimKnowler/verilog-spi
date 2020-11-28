@@ -4,8 +4,8 @@ BUILD_DIR = build
 
 .PHONY: directories clean rebuild
 
-SOURCE_FILES_VERILOG = Counter.v
-SOURCE_FILES_TEST = test.cpp TestCounter.cpp
+SOURCE_FILES_VERILOG = source/Counter.v
+SOURCE_FILES_TEST = test/test.cpp test/TestCounter.cpp
 
 all: directories ${BUILD_DIR}/test
 
@@ -18,10 +18,10 @@ ${BUILD_DIR}/test: ${SOURCE_FILES_TEST} ${BUILD_DIR}/VCounter/VCounter__ALL.a
 	-lgtest \
 	-o ${BUILD_DIR}/test
 
-build/VCounter/VCounter.cpp: ${SOURCE_FILES_VERILOG}
-	verilator -Wall -cc -Mdir ${BUILD_DIR}/VCounter Counter.v
+${BUILD_DIR}/VCounter/VCounter.cpp: ${SOURCE_FILES_VERILOG}
+	verilator -Wall -cc -Mdir ${BUILD_DIR}/VCounter source/Counter.v
 
-build/VCounter/VCounter__ALL.a: ${BUILD_DIR}/VCounter/VCounter.cpp
+${BUILD_DIR}/VCounter/VCounter__ALL.a: ${BUILD_DIR}/VCounter/VCounter.cpp
 	cd ${BUILD_DIR}/VCounter && make -f VCounter.mk
 
 clean:
