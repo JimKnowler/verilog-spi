@@ -12,7 +12,7 @@ all: directories ${BUILD_DIR}/test
 ${BUILD_DIR}/test: ${SOURCE_FILES_TEST} ${BUILD_DIR}/VCounter/VCounter__ALL.a ${BUILD_DIR}/VSPIController/VSPIController__ALL.a
 	${CXX} ${SOURCE_FILES_TEST} ${BUILD_DIR}/VCounter/VCounter__ALL.a ${BUILD_DIR}/VSPIController/VSPIController__ALL.a \
 	/usr/local/share/verilator/include/verilated.cpp \
-	-std=c++14 \
+	-std=c++2a \
 	${CFLAGS} \
 	-I ${BUILD_DIR}/VCounter \
 	-I ${BUILD_DIR}/VSPIController \
