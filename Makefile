@@ -5,7 +5,7 @@ BUILD_DIR = build
 .PHONY: directories clean rebuild
 
 SOURCE_FILES_VERILOG = Counter.v
-SOURCE_FILES_TEST = test.cpp
+SOURCE_FILES_TEST = test.cpp TestCounter.cpp
 
 all: directories ${BUILD_DIR}/test
 
