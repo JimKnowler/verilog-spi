@@ -12,7 +12,7 @@ all: directories ${BUILD_DIR}/test
 ${BUILD_DIR}/test: ${SOURCE_FILES_TEST} ${BUILD_DIR}/VCounter/VCounter__ALL.a
 	${CXX} ${SOURCE_FILES_TEST} ${BUILD_DIR}/VCounter/VCounter__ALL.a \
 	/usr/local/share/verilator/include/verilated.cpp \
-	-std=c++11 \
+	-std=c++14 \
 	-I ${BUILD_DIR}/VCounter \
 	-I /usr/local/share/verilator/include \
 	-lgtest \
