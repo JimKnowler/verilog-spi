@@ -42,3 +42,17 @@ To clean out the build directory
 ```
 $ make clean
 ```
+
+
+# TODO
+
+- add option for generating traces from tests
+  - command line option?
+  - TestBench generates a trace for each test + writes after every tick?
+  - see https://zipcpu.com/blog/2017/06/21/looking-at-verilator.html for examples
+
+- write MasterSPI
+- write SlaveSPI
+- augment makefile to be sensitive to header files
+- convert to makefile to CMake
+
