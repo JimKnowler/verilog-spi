@@ -54,5 +54,7 @@ $ make clean
 - write MasterSPI
 - write SlaveSPI
 - augment makefile to be sensitive to header files
+- refactor makefile - generic rules for Verilation of Verilog modules
+- refactor makefile - compile to object files in build directory separately so final build step is just linker
 - convert to makefile to CMake
 
