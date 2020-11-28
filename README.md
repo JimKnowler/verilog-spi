@@ -6,8 +6,7 @@ Test Driven Implementation of Serial Peripheral Interface (SPI) protocol in Veri
 
 - [GoogleTest](https://github.com/google/googletest/)
 
-
-When standing in googletest's root directory.
+While standing in googletest's root directory.
 ```
 $ mkdir build
 $ cd build
@@ -58,3 +57,9 @@ $ make clean
 - refactor makefile - generic rules for Verilation of Verilog modules
 - refactor makefile - compile to object files in build directory separately so final build step is just linker
 - convert from makefile to CMake or Bazel (python?)
+- support testing all 4 SPI modes by using verilator arg at verilation time, such as '-GSPI_MODE=3' 
+   - generate 4 versions of SPIMaster and SPISlave
+   - run unit tests on each version
+- support testing different clock speeds on SPIMaster by using verilator arg at verilation time, such as '-GCLKS_PER_HALF_BIT=3'
+   - generate multiple versions of SPIMaster
+   - run unit tests on each version
