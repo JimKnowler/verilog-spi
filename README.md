@@ -51,10 +51,10 @@ $ make clean
   - TestBench generates a trace for each test + writes after every tick?
   - see https://zipcpu.com/blog/2017/06/21/looking-at-verilator.html for examples
 
-- write MasterSPI
-- write SlaveSPI
+- write SPIMaster with tests
+- write SPISlave with tests
+- write integration tests for SPIMaster + SPISlave
 - augment makefile to be sensitive to header files
 - refactor makefile - generic rules for Verilation of Verilog modules
 - refactor makefile - compile to object files in build directory separately so final build step is just linker
-- convert to makefile to CMake
-
+- convert from makefile to CMake or Bazel (python?)
