@@ -6,9 +6,8 @@ Test Driven Implementation of Serial Peripheral Interface (SPI) protocol in Veri
 
 - [GoogleTest](https://github.com/google/googletest/)
 
-When standing in project's root directory.
+When standing in googletest's root directory.
 ```
-$ cd thirdparty/googletest
 $ mkdir build
 $ cd build
 $ cmake ..
