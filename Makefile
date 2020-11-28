@@ -1,5 +1,5 @@
 CXX=clang++
-CFLAGS=-I.
+CFLAGS=-I. -O0 -g
 BUILD_DIR = build
 
 .PHONY: directories clean rebuild
@@ -13,10 +13,11 @@ ${BUILD_DIR}/test: ${SOURCE_FILES_TEST} ${BUILD_DIR}/VCounter/VCounter__ALL.a ${
 	${CXX} ${SOURCE_FILES_TEST} ${BUILD_DIR}/VCounter/VCounter__ALL.a ${BUILD_DIR}/VSPIController/VSPIController__ALL.a \
 	/usr/local/share/verilator/include/verilated.cpp \
 	-std=c++14 \
+	${CFLAGS} \
 	-I ${BUILD_DIR}/VCounter \
 	-I ${BUILD_DIR}/VSPIController \
 	-I /usr/local/share/verilator/include \
-	-lgtest \
+	-lgtest -lgmock \
 	-o ${BUILD_DIR}/test
 
 ${BUILD_DIR}/VCounter/VCounter.cpp: source/Counter.v
