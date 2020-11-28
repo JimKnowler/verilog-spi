@@ -1,0 +1,27 @@
+# Verilog-SPI
+
+Test Driven Implementation of Serial Peripheral Interface (SPI) protocol in Verilog for FPGA.
+
+# Dependencies
+
+- [GoogleTest](https://github.com/google/googletest/)
+
+When standing in project's root directory.
+```
+$ cd thirdparty/googletest
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
+$ sudo make install
+```
+
+# Build & Run
+
+While standing in project's root directory.
+
+```
+$ make
+$ ./test
+```
+
