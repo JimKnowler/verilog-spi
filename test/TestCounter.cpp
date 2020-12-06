@@ -3,7 +3,7 @@
 #include "TestBench.h"
 
 namespace {
-    class CounterTest : public ::testing::Test {
+    class TestCounter : public ::testing::Test {
     public:
         void SetUp() override {
         }
@@ -15,22 +15,28 @@ namespace {
     };
 }
 
-TEST_F(CounterTest, ShouldConstruct) {
+TEST_F(TestCounter, ShouldConstruct) {
 }
 
-TEST_F(CounterTest, ShouldReset) {
+TEST_F(TestCounter, ShouldReset) {
     testBench.reset();
+
+    // todo: use this to test Traces with multi-bit values
     ASSERT_EQ(testBench.core().o_value, 0);
 }
 
-TEST_F(CounterTest, ShouldIncrement) {
+TEST_F(TestCounter, ShouldIncrement) {
     testBench.reset();
     testBench.tick();
+
+    // todo: use this to test Traces with multi-bit values
     ASSERT_EQ(testBench.core().o_value, 1);
 }
 
-TEST_F(CounterTest, ShouldIncrementRepeatedly) {
+TEST_F(TestCounter, ShouldIncrementRepeatedly) {
     testBench.reset();
     testBench.tick(10);
+
+    // todo: use this to test Traces with multi-bit values
     ASSERT_EQ(testBench.core().o_value, 10);
 }

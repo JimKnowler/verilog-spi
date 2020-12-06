@@ -11,6 +11,9 @@ public:
 	TestBench(void) {
 		m_core = std::make_unique<MODULE>();
 		m_tickCount = 0;
+
+		m_core->i_clk = 0;
+		m_core->eval();
 	}
 
 	virtual ~TestBench(void) {
@@ -23,34 +26,20 @@ public:
 		m_core->i_reset = 0;
 	}
 
-    void tick(uint64_t count) {
-        for (uint64_t i=0; i<count; i++) {
-            tick();
-        }
-    }
+	void tick(size_t numTicks = 1) {
+		for (size_t i=0; i<numTicks; i++) {
+			// rising edge
+			assert(m_core->i_clk == 0);
+			step();
 
-	virtual void tick(void) {
-		// Increment our own internal time reference
-		m_tickCount++;
-
-		// Make sure any combinatorial logic depending upon
-		// inputs that may have changed before we called tick()
-		// has settled before the rising edge of the clock.
-		clockFallingEdge();
-
-		// Toggle the clock
-
-		clockRisingEdge();
-		clockFallingEdge();
+			// falling edge
+			assert(m_core->i_clk == 1);
+			step();
+		}
 	}
 
-	virtual void clockRisingEdge() {
-		m_core->i_clk = 1;
-		m_core->eval();
-	}
-
-	virtual void clockFallingEdge() {
-		m_core->i_clk = 0;
+	void step() {
+		m_core->i_clk = (m_core->i_clk) ? 0 : 1;
 		m_core->eval();
 	}
 
