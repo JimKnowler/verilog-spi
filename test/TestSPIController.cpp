@@ -6,13 +6,15 @@
 #include "VSPIController.h"
 #include "TestBench.h"
 
+#include "Trace.h"
+
 using namespace testing;
 
-#define MatchRisingEdge(x) Field(&Tick::risingEdge, x)
-#define MatchFallingEdge(x) Field(&Tick::fallingEdge, x)
-#define MatchTxReady(x) Field(&Signals::o_tx_ready, x)
-#define MatchSpiClk(x) Field(&Signals::o_spi_clk, x)
-#define MatchSpiCOPI(x) Field(&Signals::o_spi_copi, x)
+#define MatchRisingEdge(x) Field(&Trace::Tick::risingEdge, x)
+#define MatchFallingEdge(x) Field(&Trace::Tick::fallingEdge, x)
+#define MatchTxReady(x) Field(&Trace::Signals::o_tx_ready, x)
+#define MatchSpiClk(x) Field(&Trace::Signals::o_spi_clk, x)
+#define MatchSpiCOPI(x) Field(&Trace::Signals::o_spi_copi, x)
 
 namespace {
     class SPIControllerTest : public ::testing::Test {
@@ -20,13 +22,13 @@ namespace {
         void SetUp() override {
             testBench.reset();
 
-            clearTrace();
+            trace.clear();
         }
 
         void tick(uint64_t numTicks = 1) {
             for (uint64_t i=0; i<numTicks; i++) {
-                Tick tick;
-                tick.index = tickCount++;
+                Trace::Tick tick;
+                tick.index = trace.tickCount++;
 
                 auto& core = testBench.core();
 
@@ -36,36 +38,13 @@ namespace {
                 testBench.clockFallingEdge();
                 tick.fallingEdge.probe(core);
 
-                trace.emplace_back(tick);
+                trace.ticks.emplace_back(tick);
             }
         }
-
-        void clearTrace() {
-            trace.clear();
-            tickCount = 0;
-        }
-
-        struct Signals {
-            uint8_t o_tx_ready;
-            uint8_t o_spi_clk;
-            uint8_t o_spi_copi;
-
-            void probe(VSPIController& core) {
-                o_tx_ready = core.o_tx_ready;
-                o_spi_clk = core.o_spi_clk;
-                o_spi_copi = core.o_spi_copi;
-            }
-        };
-
-        struct Tick {
-            uint64_t index = 0;
-            Signals risingEdge;
-            Signals fallingEdge;
-        };
-
-        std::vector<Tick> trace;
+        
         TestBench<VSPIController> testBench;
-        uint64_t tickCount;
+
+        Trace trace;
     };
 }
 
@@ -80,8 +59,8 @@ TEST_F(SPIControllerTest, ShouldReportReadyToTransmit) {
 TEST_F(SPIControllerTest, ShouldIdleSpiClockWhileIdle) {
     tick(50);
 
-    EXPECT_THAT(trace, Each(MatchRisingEdge(MatchSpiClk(Eq(0)))));
-    EXPECT_THAT(trace, Each(MatchFallingEdge(MatchSpiClk(Eq(0)))));
+    EXPECT_THAT(trace.ticks, Each(MatchRisingEdge(MatchSpiClk(Eq(0)))));
+    EXPECT_THAT(trace.ticks, Each(MatchFallingEdge(MatchSpiClk(Eq(0)))));
 }
 
 TEST_F(SPIControllerTest, ShouldSendByteF) { 
@@ -93,7 +72,7 @@ TEST_F(SPIControllerTest, ShouldSendByteF) {
     tick();
     
     // reset trace, so we only capture signals during the transmission
-    clearTrace();
+    trace.clear();
 
     // send in progress
     core.i_tx_dv = 0;
@@ -101,23 +80,23 @@ TEST_F(SPIControllerTest, ShouldSendByteF) {
     tick((8*2));
 
     // o_tx_ready should be 0 while sending
-    EXPECT_THAT(trace, Each(MatchRisingEdge(MatchTxReady(Eq(0)))));
-    EXPECT_THAT(trace, Each(MatchFallingEdge(MatchTxReady(Eq(0)))));
+    EXPECT_THAT(trace.ticks, Each(MatchRisingEdge(MatchTxReady(Eq(0)))));
+    EXPECT_THAT(trace.ticks, Each(MatchFallingEdge(MatchTxReady(Eq(0)))));
 
     // spi clk should be pulsed while sending
-    std::vector<Tick> traceEven;
-    std::copy_if(trace.begin(), trace.end(), std::back_inserter(traceEven), [](Tick& tick){ return tick.index % 2 == 0; });
+    std::vector<Trace::Tick> traceEven;
+    std::copy_if(trace.ticks.begin(), trace.ticks.end(), std::back_inserter(traceEven), [](Trace::Tick& tick){ return tick.index % 2 == 0; });
     EXPECT_THAT(traceEven, Each(MatchRisingEdge(MatchSpiClk(Eq(1)))));
     EXPECT_THAT(traceEven, Each(MatchFallingEdge(MatchSpiClk(Eq(1)))));
 
-    std::vector<Tick> traceOdd;
-    std::copy_if(trace.begin(), trace.end(), std::back_inserter(traceOdd), [](Tick& tick){ return tick.index % 2 == 1; });
+    std::vector<Trace::Tick> traceOdd;
+    std::copy_if(trace.ticks.begin(), trace.ticks.end(), std::back_inserter(traceOdd), [](Trace::Tick& tick){ return tick.index % 2 == 1; });
     EXPECT_THAT(traceOdd, Each(MatchRisingEdge(MatchSpiClk(Eq(0)))));
     EXPECT_THAT(traceOdd, Each(MatchFallingEdge(MatchSpiClk(Eq(0)))));
 
     // all bits should be sent as 1
-    EXPECT_THAT(trace, Each(MatchRisingEdge(MatchSpiCOPI(Eq(1)))));
-    EXPECT_THAT(trace, Each(MatchRisingEdge(MatchSpiCOPI(Eq(1)))));
+    EXPECT_THAT(trace.ticks, Each(MatchRisingEdge(MatchSpiCOPI(Eq(1)))));
+    EXPECT_THAT(trace.ticks, Each(MatchRisingEdge(MatchSpiCOPI(Eq(1)))));
 }
 
 // send 0b10101010

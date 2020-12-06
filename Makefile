@@ -5,7 +5,7 @@ BUILD_DIR = build
 .PHONY: directories clean rebuild
 
 SOURCE_FILES_VERILOG = source/Counter.v source/SPIController.v
-SOURCE_FILES_TEST = test/test.cpp test/TestCounter.cpp test/TestSPIController.cpp
+SOURCE_FILES_TEST = test/test.cpp test/TestCounter.cpp test/TestSPIController.cpp test/Trace.cpp
 
 all: directories ${BUILD_DIR}/test
 
@@ -18,6 +18,7 @@ ${BUILD_DIR}/test: ${SOURCE_FILES_TEST} ${BUILD_DIR}/VCounter/VCounter__ALL.a ${
 	-I ${BUILD_DIR}/VSPIController \
 	-I /usr/local/share/verilator/include \
 	-lgtest -lgmock \
+	-Werror \
 	-o ${BUILD_DIR}/test
 
 ${BUILD_DIR}/VCounter/VCounter.cpp: source/Counter.v
