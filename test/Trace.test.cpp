@@ -29,15 +29,24 @@ TEST(Trace, ShouldClear) {
     ASSERT_EQ(trace.getSteps().size(), 0);
 }
 
+TEST(Trace, ShouldFailToAddStepsWithDifferentPorts) {
+    Trace trace;
+    
+    Step step1;
+    trace.append(step1);
+
+    Step step2;
+    step2.port(1) = false;
+    ASSERT_ANY_THROW(trace.append(step2));
+}
+
 TEST(Trace, ShouldRegisterPorts) {
     Trace trace;
-    //trace.registerPort()
 
     // todo: register Port ID, name, Verilator module offset, etc
 }
 
 // todo:
-// - generic - only store ports that have data
 // - equality (of ports that have data in both traces)
 // - print to TTY
 // - generate/configure ports from Verilator module
