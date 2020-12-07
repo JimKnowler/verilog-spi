@@ -2,17 +2,17 @@
 
 #include "TraceBuilder.h"
 
-TEST(TestTraceBuilder, ShouldConstruct) {
+TEST(TraceBuilder, ShouldConstruct) {
     TraceBuilder builder;
 }
 
-TEST(TestTraceBuilder, ShouldConvertToEmptyTrace) {
+TEST(TraceBuilder, ShouldConvertToEmptyTrace) {
     Trace trace = TraceBuilder();
 
     ASSERT_EQ(trace.getSteps().size(), 0);
 }
 
-TEST(TestTraceBuilder, ShouldAddPort) {
+TEST(TraceBuilder, ShouldAddPort) {
     Trace trace = TraceBuilder()
         .i_clk();
 
@@ -21,7 +21,7 @@ TEST(TestTraceBuilder, ShouldAddPort) {
     // todo: check flag for which ports have been set
 }
 
-TEST(TestTraceBuilder, ShouldAddPorts) {
+TEST(TraceBuilder, ShouldAddPorts) {
     Trace trace = TraceBuilder()
         .i_clk()
         .o_tx_ready()
@@ -33,7 +33,7 @@ TEST(TestTraceBuilder, ShouldAddPorts) {
     // todo: check flag for which ports have been set
 }
 
-TEST(TestTraceBuilder, ShouldAddSignalToPortWithBinarySyntax) {
+TEST(TraceBuilder, ShouldAddSignalToPortWithBinarySyntax) {
     Trace trace = TraceBuilder()
         .i_clk().signal("10110111");
 
@@ -49,7 +49,7 @@ TEST(TestTraceBuilder, ShouldAddSignalToPortWithBinarySyntax) {
     ASSERT_EQ(steps[7].i_clk, 1);
 }
 
-TEST(TestTraceBuilder, ShouldAddSignalToPortWithHiLoSyntax) {
+TEST(TraceBuilder, ShouldAddSignalToPortWithHiLoSyntax) {
     Trace trace = TraceBuilder()
         .i_clk().signal("___-__-_");
 
@@ -65,15 +65,15 @@ TEST(TestTraceBuilder, ShouldAddSignalToPortWithHiLoSyntax) {
     ASSERT_EQ(steps[7].i_clk, 0);
 }
 
-TEST(TestTraceBuilder, ShouldFailToAddSignalWhenNoPortIsSelected) {
+TEST(TraceBuilder, ShouldFailToAddSignalWhenNoPortIsSelected) {
     ASSERT_ANY_THROW(TraceBuilder().signal("1"));
 }
 
-TEST(TestTraceBuilder, ShouldFailToAddSignalWithUnknownCharacter) {
+TEST(TraceBuilder, ShouldFailToAddSignalWithUnknownCharacter) {
     ASSERT_ANY_THROW(TraceBuilder().i_clk().signal("!"));
 }
 
-TEST(TestTraceBuilder, ShouldAddMultipleSignalsToPort) {
+TEST(TraceBuilder, ShouldAddMultipleSignalsToPort) {
     Trace trace = TraceBuilder()
         .i_clk().signal("10110").signal("111");
 
@@ -89,7 +89,7 @@ TEST(TestTraceBuilder, ShouldAddMultipleSignalsToPort) {
     ASSERT_EQ(steps[7].i_clk, 1);
 }
 
-TEST(TestTraceBuilder, ShouldAddSignalsToMultiplePorts) {
+TEST(TraceBuilder, ShouldAddSignalsToMultiplePorts) {
     Trace trace = TraceBuilder()
              .i_clk().signal("__")
         .o_tx_ready().signal("_-")
@@ -108,7 +108,7 @@ TEST(TestTraceBuilder, ShouldAddSignalsToMultiplePorts) {
     ASSERT_EQ(steps[1].o_spi_copi, 1);
 }
 
-TEST(TestTraceBuilder, ShouldFailToGenerateTraceWhenPortsHaveSignalsWithDifferentLengths) {
+TEST(TraceBuilder, ShouldFailToGenerateTraceWhenPortsHaveSignalsWithDifferentLengths) {
     Trace trace;
     ASSERT_ANY_THROW(trace = TraceBuilder()
              .i_clk().signal("__")
@@ -116,7 +116,7 @@ TEST(TestTraceBuilder, ShouldFailToGenerateTraceWhenPortsHaveSignalsWithDifferen
     );
 }
 
-TEST(TestTraceBuilder, ShouldRepeatSignal) {
+TEST(TraceBuilder, ShouldRepeatSignal) {
     Trace trace = TraceBuilder()
         .i_clk().signal("10").repeat(4);
 
@@ -132,7 +132,7 @@ TEST(TestTraceBuilder, ShouldRepeatSignal) {
     ASSERT_EQ(steps[7].i_clk, 0);
 }
 
-TEST(TestTraceBuilder, ShouldRepeatEachStepOfSignal) {
+TEST(TraceBuilder, ShouldRepeatEachStepOfSignal) {
     Trace trace = TraceBuilder()
         .i_clk().signal("10").repeatEachStep(4);
 

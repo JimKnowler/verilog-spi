@@ -11,7 +11,7 @@
 using namespace testing;
 
 namespace {
-    class SPIControllerTest : public ::testing::Test {
+    class SPIController : public ::testing::Test {
     public:
         void SetUp() override {
             testBench.reset();
@@ -45,15 +45,15 @@ namespace {
     };
 }
 
-TEST_F(SPIControllerTest, ShouldConstructFixture) {
+TEST_F(SPIController, ShouldConstructFixture) {
 }
 
-TEST_F(SPIControllerTest, ShouldReportReadyToTransmit) {
+TEST_F(SPIController, ShouldReportReadyToTransmit) {
     ASSERT_EQ(1, testBench.core().o_tx_ready);
 }
 
 // should not change clock while not sending
-TEST_F(SPIControllerTest, ShouldIdleSpiClockWhileIdle) {
+TEST_F(SPIController, ShouldIdleSpiClockWhileIdle) {
     tick(50);
 
     // TODO - implement support for this :)
@@ -65,7 +65,7 @@ TEST_F(SPIControllerTest, ShouldIdleSpiClockWhileIdle) {
     */
 }
 
-TEST_F(SPIControllerTest, ShouldSendByteF) { 
+TEST_F(SPIController, ShouldSendByteF) { 
     auto& core = testBench.core();
     
     // start sending 0xf by pulsing command lines

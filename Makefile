@@ -5,7 +5,7 @@ BUILD_DIR = build
 .PHONY: directories clean rebuild
 
 SOURCE_FILES_VERILOG = source/Counter.v source/SPIController.v
-SOURCE_FILES_TEST = test/test.cpp test/TestCounter.cpp test/TestSPIController.cpp test/Trace.cpp test/TraceBuilder.cpp test/TestTraceBuilder.cpp
+SOURCE_FILES_TEST = test/main.cpp test/Counter.test.cpp test/SPIController.test.cpp test/Trace.cpp test/Trace.test.cpp test/TraceBuilder.cpp test/TraceBuilder.test.cpp
 
 all: directories ${BUILD_DIR}/test
 
