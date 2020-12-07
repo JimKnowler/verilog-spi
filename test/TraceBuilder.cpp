@@ -9,13 +9,13 @@ TraceBuilder::~TraceBuilder() {
 }
 
 TraceBuilder::operator Trace() const {
-    std::vector<Trace::Step> steps;
+    std::vector<Step> steps;
 
     if (!ports.empty()) {
         size_t length = ports[0]->stepValues.size();
 
         for (size_t i=0; i<length; i++) {
-            steps.push_back(Trace::Step());
+            steps.push_back(Step());
         }
     }
 
@@ -27,25 +27,8 @@ TraceBuilder::operator Trace() const {
 
         size_t index = 0;
         for (bool value : port->stepValues) {
-            Trace::Step& step = steps[index];
-
-            switch (port->id) {
-                case PortId::i_clk:
-                    step.i_clk = value ? 1 : 0;
-                    break;
-                case PortId::o_spi_clk:
-                    step.o_spi_clk = value ? 1 : 0;
-                    break;
-                case PortId::o_spi_copi:
-                    step.o_spi_copi = value ? 1 : 0;
-                    break;
-                case PortId::o_tx_ready:
-                    step.o_tx_ready = value ? 1 : 0;
-                    break;
-                default:
-                    throw std::logic_error("unknown port");
-                    break;
-            }
+            Step& step = steps[index];
+            step.port(port->id) = value;
             
             index ++;
         }
@@ -59,29 +42,14 @@ TraceBuilder::operator Trace() const {
     return trace;
 }
 
-TraceBuilder& TraceBuilder::i_clk() {
-    add_port(std::make_shared<Port>(PortId::i_clk));
+TraceBuilder& TraceBuilder::port(uint32_t portId) {
+    auto port = std::make_shared<Port>(portId);
+    ports.push_back(port);
+    currentPort = port;
 
     return *this;
 }
 
-TraceBuilder& TraceBuilder::o_tx_ready() {
-    add_port(std::make_shared<Port>(PortId::o_tx_ready));
-
-    return *this;
-}
-
-TraceBuilder& TraceBuilder::o_spi_clk() {
-    add_port(std::make_shared<Port>(PortId::o_spi_clk));
-
-    return *this;
-}
-
-TraceBuilder& TraceBuilder::o_spi_copi() {
-    add_port(std::make_shared<Port>(PortId::o_spi_copi));
-
-    return *this;
-}
 
 TraceBuilder& TraceBuilder::signal(const std::string& stepValues) {
     if (!currentPort) {
@@ -139,9 +107,4 @@ TraceBuilder& TraceBuilder::repeatEachStep(size_t repetitions) {
     return *this;
 }
 
-TraceBuilder::Port::Port(PortId _id) : id(_id) {}
-
-void TraceBuilder::add_port(std::shared_ptr<Port> port) {
-    ports.push_back(port);
-    currentPort = port;
-}
+TraceBuilder::Port::Port(uint32_t _id) : id(_id) {}

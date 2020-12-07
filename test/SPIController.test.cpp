@@ -23,7 +23,7 @@ namespace {
         //       or work with TestBench via callback after each step
         void tick(uint64_t numTicks = 1) {
             for (uint64_t i=0; i<numTicks; i++) {
-                Trace::Step step;
+                Step step;
                 auto& core = testBench.core();
 
                 testBench.step();
