@@ -4,13 +4,6 @@ Step::Step() {
     portMask = 0;
 }
 
-void Step::probe(VSPIController& core) {
-    port(i_clk) = core.i_clk;
-    port(o_tx_ready) = core.o_tx_ready;
-    port(o_spi_clk) = core.o_spi_clk;
-    port(o_spi_copi) = core.o_spi_copi;
-}
-
 size_t Step::getNumPorts() const {
     return ports.size();
 }

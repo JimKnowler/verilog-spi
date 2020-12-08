@@ -10,17 +10,18 @@ class TestBench {
 public:
 	TestBench(void) {
 		m_core = std::make_unique<MODULE>();
-		m_tickCount = 0;
+		
+		m_stepCount = 0;
 
 		m_core->i_clk = 0;
 		m_core->eval();
 	}
 
-	virtual ~TestBench(void) {
+	~TestBench(void) {
 		m_core.release();
 	}
 
-	virtual void reset(void) {
+	void reset(void) {
 		m_core->i_reset = 1;
 		tick();
 		m_core->i_reset = 0;
@@ -30,29 +31,37 @@ public:
 		for (size_t i=0; i<numTicks; i++) {
 			// rising edge
 			assert(m_core->i_clk == 0);
-			step();
+			nextStep();
 
 			// falling edge
 			assert(m_core->i_clk == 1);
-			step();
+			nextStep();
 		}
 	}
 
-	void step() {
+	void nextStep() {
 		m_core->i_clk = (m_core->i_clk) ? 0 : 1;
 		m_core->eval();
+
+		m_stepCount += 1;
+
+		onNextStep();
+	}
+
+	virtual void onNextStep() {
+
 	}
 
     MODULE& core() {
         return *m_core;
     }
 
-    uint64_t tickCount() const {
-        return m_tickCount;
+    uint64_t stepCount() const {
+        return m_stepCount;
     }
 
 private:
-	uint64_t    m_tickCount;
+	uint64_t    m_stepCount;
 	std::unique_ptr<MODULE>		m_core;
 
 };

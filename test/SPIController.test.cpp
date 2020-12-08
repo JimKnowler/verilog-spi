@@ -3,10 +3,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "VSPIController.h"
-#include "TestBench.h"
-
-#include "Trace.h"
+#include "TestBenchSPIController.h"
 
 using namespace testing;
 
@@ -15,33 +12,9 @@ namespace {
     public:
         void SetUp() override {
             testBench.reset();
-
-            trace.clear();
         }
 
-        // todo: move this into TestBench / Trace?
-        //       or work with TestBench via callback after each step
-        void tick(uint64_t numTicks = 1) {
-            for (uint64_t i=0; i<numTicks; i++) {
-                Step step;
-                auto& core = testBench.core();
-
-                testBench.step();
-                step.probe(core);
-                trace.append(step);
-
-                testBench.step();
-                step.probe(core);
-                trace.append(step);
-            }
-        }
-        
-        TestBench<VSPIController> testBench;
-
-        // todo: move this to TestBench?   
-        //     or ask TestBench to work with Trace, via callback?
-        //     share type templating?
-        Trace trace;
+        TestBenchSPIController testBench;
     };
 }
 
@@ -54,14 +27,14 @@ TEST_F(SPIController, ShouldReportReadyToTransmit) {
 
 // should not change clock while not sending
 TEST_F(SPIController, ShouldIdleSpiClockWhileIdle) {
-    tick(50);
+    testBench.tick(50);
 
     // TODO - implement support for this :)
     /*
     Trace expected = TraceBuilder()
         .o_spi_clk().signal("00").repeat(50);
 
-    EXPECT_THAT(trace, MatchesTrace(expected));
+    EXPECT_THAT(testBench.trace, MatchesTrace(expected));
     */
 }
 
@@ -71,17 +44,17 @@ TEST_F(SPIController, ShouldSendByteF) {
     // start sending 0xf by pulsing command lines
     core.i_tx_dv = 1;
     core.i_tx_byte = 0xf;
-    tick();
+    testBench.tick();
     
     // reset trace, so we only capture signals during the transmission
     // TODO: or, should we include the first tick, to make sure that
     //       SPI lines are idle?
-    trace.clear();
+    testBench.trace.clear();
 
     // send in progress
     core.i_tx_dv = 0;
     core.i_tx_byte = 0;
-    tick(8 * 2);
+    testBench.tick(8 * 2);
 
     // o_tx_ready should be 0 while sending
     // o_spi_clk should be pulsed every other tick while sending
@@ -96,7 +69,7 @@ TEST_F(SPIController, ShouldSendByteF) {
         .o_spi_copi("1111")
         .trace().repeat(8);
     
-    EXPECT_THAT(trace, MatchesTrace(expectedTrace));
+    EXPECT_THAT(testBench.trace, MatchesTrace(expectedTrace));
     */
 }
 

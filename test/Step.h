@@ -22,9 +22,6 @@ public:
     // @note throw exception if port doesn't exist
     const bool& port(uint32_t portId) const;
 
-    // @todo: template? use generic port ids to get ports
-    void probe(VSPIController& core);
-
     /// @brief Get the number of ports stored by this step
     size_t getNumPorts() const;
 
