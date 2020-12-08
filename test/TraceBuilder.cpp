@@ -78,8 +78,36 @@ TraceBuilder& TraceBuilder::signal(const std::string& stepValues) {
 }
 
 TraceBuilder& TraceBuilder::repeat(size_t repetitions) {
-    std::vector<bool>& stepValues = currentPort->stepValues;
+    if (currentPort) {
+        repeat(currentPort->stepValues, repetitions);    
+    } else {
+        for (auto& port : ports) {
+            repeat(port->stepValues, repetitions);
+        }
+    }
 
+    return *this;
+}
+
+TraceBuilder& TraceBuilder::repeatEachStep(size_t repetitions) {
+    if (currentPort) {
+        repeatEachStep(currentPort->stepValues, repetitions);
+    } else {
+        for (auto& port : ports) {
+            repeatEachStep(port->stepValues, repetitions);
+        }
+    }
+
+    return *this;
+}
+
+TraceBuilder& TraceBuilder::allPorts() {
+    currentPort.reset();
+
+    return *this;
+}
+
+void TraceBuilder::repeat(std::vector<bool>& stepValues, size_t repetitions) {
     std::vector<bool> newStepValues;
 
     for (size_t i=0; i<repetitions; i++) {
@@ -87,13 +115,9 @@ TraceBuilder& TraceBuilder::repeat(size_t repetitions) {
     }
 
     stepValues = newStepValues;
-
-    return *this;
 }
 
-TraceBuilder& TraceBuilder::repeatEachStep(size_t repetitions) {
-    std::vector<bool>& stepValues = currentPort->stepValues;
-
+void TraceBuilder::repeatEachStep(std::vector<bool>& stepValues, size_t repetitions) {
     std::vector<bool> newStepValues;
 
     for (bool bit : stepValues ) {
@@ -103,8 +127,6 @@ TraceBuilder& TraceBuilder::repeatEachStep(size_t repetitions) {
     }
 
     stepValues = newStepValues;
-
-    return *this;
 }
 
 TraceBuilder::Port::Port(uint32_t _id) : id(_id) {}

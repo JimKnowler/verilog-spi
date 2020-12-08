@@ -29,6 +29,9 @@ public:
     //   "abcd".repeatEachStep(2) => "aabbccdd"
     TraceBuilder& repeatEachStep(size_t repetitions);
 
+    // apply subsequent modifiers to all ports
+    TraceBuilder& allPorts();
+
 private:
     struct Port {
         Port(uint32_t _id);
@@ -41,5 +44,6 @@ private:
     std::shared_ptr<Port> currentPort;
     std::vector<std::shared_ptr<Port>> ports;
 
-    void add_port(std::shared_ptr<Port> port);
+    void repeat(std::vector<bool>& stepValues, size_t repetitions);
+    void repeatEachStep(std::vector<bool>& stepValues, size_t repetitions);
 };

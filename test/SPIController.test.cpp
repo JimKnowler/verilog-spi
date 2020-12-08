@@ -3,6 +3,9 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
+#include "MatchesTrace.h"
+#include "TraceBuilder.h"
+
 #include "TestBenchSPIController.h"
 
 using namespace testing;
@@ -25,17 +28,13 @@ TEST_F(SPIController, ShouldReportReadyToTransmit) {
     ASSERT_EQ(1, testBench.core().o_tx_ready);
 }
 
-// should not change clock while not sending
 TEST_F(SPIController, ShouldIdleSpiClockWhileIdle) {
     testBench.tick(50);
 
-    // TODO - implement support for this :)
-    /*
     Trace expected = TraceBuilder()
-        .o_spi_clk().signal("00").repeat(50);
+        .port(o_spi_clk).signal("00").repeat(50);
 
     EXPECT_THAT(testBench.trace, MatchesTrace(expected));
-    */
 }
 
 TEST_F(SPIController, ShouldSendByteF) { 
@@ -47,8 +46,9 @@ TEST_F(SPIController, ShouldSendByteF) {
     testBench.tick();
     
     // reset trace, so we only capture signals during the transmission
-    // TODO: or, should we include the first tick, to make sure that
+    // TODO: or, should we include the first tick in Trace, to make sure that
     //       SPI lines are idle?
+    // IDEA: support concatenating Traces 
     testBench.trace.clear();
 
     // send in progress
@@ -60,17 +60,14 @@ TEST_F(SPIController, ShouldSendByteF) {
     // o_spi_clk should be pulsed every other tick while sending
     // o_spi_copi should be 1 while sending
     
-    // TODO - implement support for this :)
-    /*
     Trace expectedTrace = TraceBuilder()
-             .i_clk("1010")
-        .o_tx_ready("0000")
-         .o_spi_clk("1100")
-        .o_spi_copi("1111")
-        .trace().repeat(8);
+             .port(i_clk).signal("1010")
+        .port(o_tx_ready).signal("0000")
+         .port(o_spi_clk).signal("1100")
+        .port(o_spi_copi).signal("1111")
+        .allPorts().repeat(8);
     
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedTrace));
-    */
 }
 
 // send 0b10101010

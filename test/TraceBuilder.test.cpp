@@ -150,9 +150,56 @@ TEST(TraceBuilder, ShouldRepeatEachStepOfSignal) {
     ASSERT_EQ(steps[7].port(i_clk), 0);
 }
 
-// todo
-// - add signals to multiple ports, modifying them independently
-// - handle comparing traces where we're only interested in specific ports
-//    - flags / mask for ports that have fields
-//    - move portId enum to Trace?
-// - repeat() applied to entire trace (i.e. .allPorts().repeat(2) )
+TEST(TraceBuilder, ShouldModifyPortsIndependently) {
+    Trace trace = TraceBuilder()
+        .port(i_clk).signal("10").repeatEachStep(2)
+        .port(o_tx_ready).signal("10").repeat(2);
+    
+    const std::vector<Step>& steps = trace.getSteps();
+    ASSERT_EQ(steps.size(), 4);
+    ASSERT_EQ(steps[0].port(i_clk), 1);
+    ASSERT_EQ(steps[1].port(i_clk), 1);
+    ASSERT_EQ(steps[2].port(i_clk), 0);
+    ASSERT_EQ(steps[3].port(i_clk), 0);
+    ASSERT_EQ(steps[0].port(o_tx_ready), 1);
+    ASSERT_EQ(steps[1].port(o_tx_ready), 0);
+    ASSERT_EQ(steps[2].port(o_tx_ready), 1);
+    ASSERT_EQ(steps[3].port(o_tx_ready), 0);
+
+}
+
+TEST(TraceBuilder, ShouldRepeatForAllPorts) {
+    Trace trace = TraceBuilder()
+        .port(i_clk).signal("10")
+        .port(o_tx_ready).signal("01")
+        .allPorts().repeat(2);
+    
+    const std::vector<Step>& steps = trace.getSteps();
+    ASSERT_EQ(steps.size(), 4);
+    ASSERT_EQ(steps[0].port(i_clk), 1);
+    ASSERT_EQ(steps[1].port(i_clk), 0);
+    ASSERT_EQ(steps[2].port(i_clk), 1);
+    ASSERT_EQ(steps[3].port(i_clk), 0);
+    ASSERT_EQ(steps[0].port(o_tx_ready), 0);
+    ASSERT_EQ(steps[1].port(o_tx_ready), 1);
+    ASSERT_EQ(steps[2].port(o_tx_ready), 0);
+    ASSERT_EQ(steps[3].port(o_tx_ready), 1);
+}
+
+TEST(TraeBuilder, ShouldRepeatEachStepForAllPorts) {
+    Trace trace = TraceBuilder()
+        .port(i_clk).signal("10")
+        .port(o_tx_ready).signal("01")
+        .allPorts().repeatEachStep(2);
+    
+    const std::vector<Step>& steps = trace.getSteps();
+    ASSERT_EQ(steps.size(), 4);
+    ASSERT_EQ(steps[0].port(i_clk), 1);
+    ASSERT_EQ(steps[1].port(i_clk), 1);
+    ASSERT_EQ(steps[2].port(i_clk), 0);
+    ASSERT_EQ(steps[3].port(i_clk), 0);
+    ASSERT_EQ(steps[0].port(o_tx_ready), 0);
+    ASSERT_EQ(steps[1].port(o_tx_ready), 0);
+    ASSERT_EQ(steps[2].port(o_tx_ready), 1);
+    ASSERT_EQ(steps[3].port(o_tx_ready), 1);
+}
