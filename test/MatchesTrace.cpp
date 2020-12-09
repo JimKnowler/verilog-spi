@@ -2,7 +2,7 @@
 
 namespace matches_trace {
 
-    bool compare(const Trace& a, const Trace& b) {
+    bool compare(const Trace& a, const Trace& b, ::testing::MatchResultListener& listener) {
 
         auto& stepsA = a.getSteps();
         auto& stepsB = b.getSteps();
@@ -11,7 +11,7 @@ namespace matches_trace {
         const uint32_t sizeB = stepsB.size();
 
         if (sizeA != sizeB) {
-            printf("MatchesTrace: false - different number of steps: expected [%u] != actual [%u]\n", sizeB, sizeA);
+            listener << "different number of steps: expected [" << sizeB << "] != actual [" << sizeA << "]\n";
             return false;
         }
 
@@ -30,7 +30,8 @@ namespace matches_trace {
                 const bool valueB = stepsB[step].port(portId);
 
                 if (valueA != valueB) {
-                    printf("MatchesTrace: false - different value on portId [%u] at step [%zu]: expected [%u] != actual [%u]\n", portId, step, valueB, valueA);
+                    // todo: colour 'port' label to match signal
+                    listener << "different value on port [" << portId << "] at step [" << step << "]: expected [" << valueB << "] != actual [" << valueA << "]\n";
 
                     return false;
                 }

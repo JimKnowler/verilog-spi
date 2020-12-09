@@ -3,11 +3,11 @@
 #include "Trace.h"
 
 namespace matches_trace {
-    bool compare(const Trace& a, const Trace& b);
+    bool compare(const Trace& a, const Trace& b, ::testing::MatchResultListener& listener);
 }
 
 MATCHER_P(MatchesTrace, trace, "") {
-    if (!matches_trace::compare(arg, trace)) {
+    if (!matches_trace::compare(arg, trace, *result_listener)) {
         return false;
     }
 
