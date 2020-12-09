@@ -40,13 +40,26 @@ TEST(Trace, ShouldFailToAddStepsWithDifferentPorts) {
     ASSERT_ANY_THROW(trace.append(step2));
 }
 
-TEST(Trace, ShouldRegisterPorts) {
-    Trace trace;
-
-    // todo: register Port ID, name, Verilator module offset, etc
+TEST(Trace, ShouldGetPortMaskForEmptyTrace) {
+    const Trace trace;
+    
+    ASSERT_EQ(0, trace.getPortMask());
 }
 
+TEST(Trace, ShouldGetPortMaskForNonEmptyTrace) {
+    Step step;
+    step.port(0) = 1;
+    step.port(3) = 0;
+
+    Trace trace;
+    trace.append(step);
+
+    // bits 0 and 3 should be set in mask
+    // bits 0 = 1, bit 3 = 8
+    ASSERT_EQ(0x00000009, trace.getPortMask());
+}
+
+
 // todo:
-// - equality (of ports that have data in both traces)
 // - print to TTY
-// - generate/configure ports from Verilator module
+// - generate/configure ports from Verilator module - python script?

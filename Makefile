@@ -10,6 +10,7 @@ SOURCE_FILES_TEST = test/main.cpp \
 					test/Trace.cpp test/Trace.test.cpp \
 					test/Step.cpp test/Step.test.cpp \
 					test/TraceBuilder.cpp test/TraceBuilder.test.cpp \
+					test/MatchesTrace.cpp test/MatchesTrace.test.cpp \
 					test/TestBench.test.cpp
 
 all: directories ${BUILD_DIR}/test
