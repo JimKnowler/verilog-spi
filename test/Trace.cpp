@@ -34,12 +34,16 @@ std::ostream& operator<<(std::ostream &os, const Trace& trace) {
 
     auto& steps = trace.getSteps();
     size_t numSteps = steps.size();
-        
-    // todo: colour each port differently
+    
     for (uint32_t portId=0; portId<32; portId++) {
         if (0 == (portMask & (1 << portId))) {
             continue;
         }
+
+        uint32_t colour = 1 + (portId % 7);
+
+        // set foreground colour on black
+        os << "\x1b[" << (colour + 30) << ";40m";
 
         /// @todo human readable label for each port
         /// @todo scale/timeline at top of trace
@@ -48,13 +52,21 @@ std::ostream& operator<<(std::ostream &os, const Trace& trace) {
         sprintf(portLabel, "  port %2u: [", portId);
         os << portLabel;
 
+        // set black text on background colour
+        os << "\x1b[30;" << (colour + 40) << "m";
+
         for (size_t step=0; step < numSteps; step++) {
-            // todo: colour hi/lo differently
             os << (steps[step].port(portId) ? "-" : "_");
         }
 
+        // set foreground colour on black
+        os << "\x1b[" << (colour + 30) << ";40m";
+        
         os << "]\n";
     }
+
+    // reset foreground / background colour
+    os << "\x1b[0m";
 
     return os;
 }

@@ -11,7 +11,7 @@ namespace matches_trace {
         const uint32_t sizeB = stepsB.size();
 
         if (sizeA != sizeB) {
-            printf("MatchesTrace: false - different number of steps [%u] != [%u]\n", sizeA, sizeB);
+            printf("MatchesTrace: false - different number of steps: expected [%u] != actual [%u]\n", sizeB, sizeA);
             return false;
         }
 
@@ -30,7 +30,7 @@ namespace matches_trace {
                 const bool valueB = stepsB[step].port(portId);
 
                 if (valueA != valueB) {
-                    printf("MatchesTrace: false - different value on portId [%u] at step [%zu]: value [%u] != [%u]\n", portId, step, valueA, valueB);
+                    printf("MatchesTrace: false - different value on portId [%u] at step [%zu]: expected [%u] != actual [%u]\n", portId, step, valueB, valueA);
 
                     return false;
                 }
