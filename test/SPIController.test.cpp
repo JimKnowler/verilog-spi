@@ -15,6 +15,7 @@ namespace {
     public:
         void SetUp() override {
             testBench.reset();
+            testBench.trace.clear();
         }
 
         TestBenchSPIController testBench;
@@ -92,3 +93,5 @@ TEST_F(SPIController, ShouldSendByteF) {
 
 // TODO - parameterised CLKS_PER_HALF_BIT
 // TODO - parameterised SPI mode
+
+// todo: reset - check trace
