@@ -1,4 +1,5 @@
 #include "Trace.h"
+#include "ConsoleColour.h"
 
 Trace::Trace() {
 }
@@ -33,6 +34,8 @@ const uint32_t Trace::getPortMask() const {
 
 std::ostream& operator<<(std::ostream &os, const Trace& trace) {
     os << "\n";
+    os << ConsoleColour().reset();
+
     const uint32_t portMask = trace.getPortMask();
 
     auto& steps = trace.getSteps();
@@ -59,10 +62,7 @@ std::ostream& operator<<(std::ostream &os, const Trace& trace) {
         }
 
         uint32_t colour = 1 + (portId % 7);
-
-        // set foreground colour 
-        os << "\x1b[0m";
-        os << "\x1b[" << (colour + 30) << "m";
+        os << ConsoleColour().fg(colour);
 
         /// @todo human readable label for each port
 
@@ -70,16 +70,13 @@ std::ostream& operator<<(std::ostream &os, const Trace& trace) {
         sprintf(portLabel, "  port %2u ", portId);
         os << portLabel;
 
-        // set black text on background colour
-        os << "\x1b[30;" << (colour + 40) << "m";
+        os << ConsoleColour().fg(ConsoleColour::kBlack).bg(colour);
 
         for (size_t step=0; step < numSteps; step++) {
             os << (steps[step].port(portId) ? "-" : "_");
         }
 
-        // reset foreground / background colour
-        os << "\x1b[0m";
-
+        os << ConsoleColour().reset();
         os << "\n";
     }
 

@@ -11,7 +11,8 @@ SOURCE_FILES_TEST = test/main.cpp \
 					test/Step.cpp test/Step.test.cpp \
 					test/TraceBuilder.cpp test/TraceBuilder.test.cpp \
 					test/MatchesTrace.cpp test/MatchesTrace.test.cpp \
-					test/TestBench.test.cpp
+					test/TestBench.test.cpp \
+					test/ConsoleColour.cpp
 
 all: directories ${BUILD_DIR}/test
 
