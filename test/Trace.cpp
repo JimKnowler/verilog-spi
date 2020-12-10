@@ -1,5 +1,4 @@
 #include "Trace.h"
-#include "ConsoleColour.h"
 
 Trace::Trace() {
 }
@@ -61,8 +60,9 @@ std::ostream& operator<<(std::ostream &os, const Trace& trace) {
             continue;
         }
 
-        uint32_t colour = 1 + (portId % 7);
-        os << ConsoleColour().fg(colour);
+        ConsoleColour::Colour portColour = Trace::getColourForPortId(portId);
+
+        os << ConsoleColour().fg(portColour);
 
         /// @todo human readable label for each port
 
@@ -70,7 +70,7 @@ std::ostream& operator<<(std::ostream &os, const Trace& trace) {
         sprintf(portLabel, "  port %2u ", portId);
         os << portLabel;
 
-        os << ConsoleColour().fg(ConsoleColour::kBlack).bg(colour);
+        os << ConsoleColour().fg(ConsoleColour::kBlack).bg(portColour);
 
         for (size_t step=0; step < numSteps; step++) {
             os << (steps[step].port(portId) ? "-" : "_");
@@ -83,4 +83,10 @@ std::ostream& operator<<(std::ostream &os, const Trace& trace) {
     
 
     return os;
+}
+
+ConsoleColour::Colour Trace::getColourForPortId(uint32_t portId) {
+    ConsoleColour::Colour colour = ConsoleColour::Colour(1 + (portId % 7));
+
+    return colour;
 }

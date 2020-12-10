@@ -30,8 +30,11 @@ namespace matches_trace {
                 const bool valueB = stepsB[step].port(portId);
 
                 if (valueA != valueB) {
-                    // todo: colour 'port' label to match signal
-                    listener << "different value on port [" << portId << "] at step [" << step << "]: expected [" << valueB << "] != actual [" << valueA << "]\n";
+                    listener << "different value on " 
+                            << ConsoleColour().fg(Trace::getColourForPortId(portId))
+                            << "port " << portId
+                            << ConsoleColour().reset()
+                            << " at step [" << step << "]: expected [" << valueB << "] != actual [" << valueA << "]\n";
 
                     return false;
                 }

@@ -3,8 +3,8 @@
 #include <vector>
 #include <ostream>
 
-#include "VSPIController.h"
 #include "Step.h"
+#include "ConsoleColour.h"
 
 class Trace {
 public:
@@ -25,6 +25,9 @@ public:
 
     /// @brief dump state of signal to output stream
     friend std::ostream& operator<<(std::ostream &os, const Trace& trace);
+
+    /// @brief choose a console colour for a port ID
+    static ConsoleColour::Colour getColourForPortId(uint32_t portId);
 
 private:
     
