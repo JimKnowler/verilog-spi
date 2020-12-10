@@ -14,6 +14,7 @@ public:
     operator Trace() const;
 
     // select the port to build
+    TraceBuilder& port(const PortDescription& portDesc);
     TraceBuilder& port(uint32_t portId);
 
     // append a signal to the current port

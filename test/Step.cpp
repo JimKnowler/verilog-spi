@@ -8,6 +8,12 @@ size_t Step::getNumPorts() const {
     return ports.size();
 }
 
+bool& Step::port(const PortDescription& portDesc) {
+    uint32_t portId = portDesc.id();
+
+    return port(portId);
+}
+
 bool& Step::port(uint32_t portId) {
     if (!hasPort(portId)) {
         if (getNumPorts() == 32) {
@@ -20,6 +26,12 @@ bool& Step::port(uint32_t portId) {
     portMask |= (1 << portId);
 
     return value;
+}
+
+const bool& Step::port(const PortDescription& portDesc) const {
+    const uint32_t portId = portDesc.id();
+
+    return port(portId);
 }
 
 const bool& Step::port(uint32_t portId) const {

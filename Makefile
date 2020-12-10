@@ -9,10 +9,12 @@ SOURCE_FILES_TEST = test/main.cpp \
 					test/Counter.test.cpp test/SPIController.test.cpp \
 					test/Trace.cpp test/Trace.test.cpp \
 					test/Step.cpp test/Step.test.cpp \
+					test/PortDescription.cpp \
 					test/TraceBuilder.cpp test/TraceBuilder.test.cpp \
 					test/MatchesTrace.cpp test/MatchesTrace.test.cpp \
 					test/TestBench.test.cpp \
-					test/ConsoleColour.cpp
+					test/ConsoleColour.cpp \
+					test/SPIControllerGenerated.cpp test/CounterGenerated.cpp
 
 all: directories ${BUILD_DIR}/test
 

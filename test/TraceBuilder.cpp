@@ -42,6 +42,11 @@ TraceBuilder::operator Trace() const {
     return trace;
 }
 
+TraceBuilder& TraceBuilder::port(const PortDescription& portDesc) {
+    const uint32_t portId = portDesc.id();
+    return port(portId);
+}
+
 TraceBuilder& TraceBuilder::port(uint32_t portId) {
     auto port = std::make_shared<Port>(portId);
     ports.push_back(port);

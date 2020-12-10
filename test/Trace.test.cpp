@@ -2,7 +2,7 @@
 
 #include "Trace.h"
 
-#include "SPIControllerPort.h"
+#include "SPIControllerGenerated.h"
 
 TEST(Trace, ShouldConstruct) {
     Trace trace;

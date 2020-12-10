@@ -2,7 +2,7 @@
 
 #include "TestBench.h"
 #include "VSPIController.h"
-#include "SPIControllerPort.h"
+#include "SPIControllerGenerated.h"
 #include "Trace.h"
 
 // @strategy - put all of the VSPIController specific code here

@@ -2,7 +2,7 @@
 
 using namespace testing;
 
-#include "SPIControllerPort.h"
+#include "SPIControllerGenerated.h"
 
 #include "Step.h"
 
