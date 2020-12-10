@@ -42,7 +42,7 @@ std::ostream& operator<<(std::ostream &os, const Trace& trace) {
 
         uint32_t colour = 1 + (portId % 7);
 
-        // set foreground colour on black
+        // set foreground colour 
         os << "\x1b[" << (colour + 30) << ";40m";
 
         /// @todo human readable label for each port
@@ -59,14 +59,18 @@ std::ostream& operator<<(std::ostream &os, const Trace& trace) {
             os << (steps[step].port(portId) ? "-" : "_");
         }
 
-        // set foreground colour on black
+        // set foreground colour
         os << "\x1b[" << (colour + 30) << ";40m";
         
-        os << "]\n";
+        os << "]";
+
+        // reset foreground / background colour
+        os << "\x1b[0m";
+
+        os << "\n";
     }
 
-    // reset foreground / background colour
-    os << "\x1b[0m";
+    
 
     return os;
 }
