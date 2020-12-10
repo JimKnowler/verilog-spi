@@ -28,6 +28,9 @@ const uint32_t Trace::getPortMask() const {
     }
 }
 
+/// @todo create component that encapsulates TTY Colour based on 
+///       https://stackoverflow.com/questions/33309136/change-color-in-os-x-console-output
+
 std::ostream& operator<<(std::ostream &os, const Trace& trace) {
     os << "\n";
     const uint32_t portMask = trace.getPortMask();
@@ -35,6 +38,21 @@ std::ostream& operator<<(std::ostream &os, const Trace& trace) {
     auto& steps = trace.getSteps();
     size_t numSteps = steps.size();
     
+    // output a timeline
+    os << "          ";
+
+    const int kDividerSize = 5;
+    int numDividers = (numSteps + kDividerSize - 1) / kDividerSize;
+
+    for (int i=0; i<numDividers;i++) {
+        char divider[8];
+        sprintf(divider, "|%-*d", kDividerSize-1, i * kDividerSize);
+        os << divider;
+    }
+
+    os << "\n";
+
+    // output a row for each port
     for (uint32_t portId=0; portId<32; portId++) {
         if (0 == (portMask & (1 << portId))) {
             continue;
@@ -43,13 +61,13 @@ std::ostream& operator<<(std::ostream &os, const Trace& trace) {
         uint32_t colour = 1 + (portId % 7);
 
         // set foreground colour 
-        os << "\x1b[" << (colour + 30) << ";40m";
+        os << "\x1b[0m";
+        os << "\x1b[" << (colour + 30) << "m";
 
         /// @todo human readable label for each port
-        /// @todo scale/timeline at top of trace
 
         char portLabel[32];
-        sprintf(portLabel, "  port %2u: [", portId);
+        sprintf(portLabel, "  port %2u ", portId);
         os << portLabel;
 
         // set black text on background colour
@@ -58,11 +76,6 @@ std::ostream& operator<<(std::ostream &os, const Trace& trace) {
         for (size_t step=0; step < numSteps; step++) {
             os << (steps[step].port(portId) ? "-" : "_");
         }
-
-        // set foreground colour
-        os << "\x1b[" << (colour + 30) << ";40m";
-        
-        os << "]";
 
         // reset foreground / background colour
         os << "\x1b[0m";
