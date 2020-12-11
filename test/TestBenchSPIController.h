@@ -12,6 +12,8 @@ class TestBenchSPIController : public TestBench<VSPIController> {
 public:
     virtual void onNextStep() override {
         Step step;
+
+        using namespace spi_controller;
         
         step.port(i_clk) = core().i_clk;
         step.port(o_tx_ready) = core().o_tx_ready;

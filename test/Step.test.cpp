@@ -2,13 +2,12 @@
 
 using namespace testing;
 
-/// @todo remove this, and replace with local test port descriptions
-#include "SPIControllerGenerated.h"
-
 #include "Step.h"
 
 namespace {
     PORT_DESCRIPTION(0, test_port_0);
+    PORT_DESCRIPTION(1, test_port_1);
+    PORT_DESCRIPTION(2, test_port_2);
     PORT_DESCRIPTION(3, test_port_3);
 }
 
@@ -20,57 +19,57 @@ TEST(Step, ShouldConstruct) {
 
 TEST(Step, ShouldAddPort) {
     Step step;
-    step.port(i_clk) = true;
+    step.port(test_port_0) = true;
 
     ASSERT_EQ(1, step.getNumPorts());
 }
 
 TEST(Step, ShouldGetPort) {
     Step step;
-    step.port(i_clk) = true;
+    step.port(test_port_0) = true;
 
-    ASSERT_EQ(true, step.port(i_clk));
+    ASSERT_EQ(true, step.port(test_port_0));
 }
 
 TEST(Step, ShouldAddMultiplePorts) {
     Step step;
-    step.port(i_clk) = true;
-    step.port(o_tx_ready) = false;
-    step.port(o_spi_clk) = true;
-    step.port(o_spi_copi) = false;
+    step.port(test_port_0) = true;
+    step.port(test_port_1) = false;
+    step.port(test_port_2) = true;
+    step.port(test_port_3) = false;
 
     ASSERT_EQ(4, step.getNumPorts());
-    ASSERT_EQ(true, step.port(i_clk));
-    ASSERT_EQ(false, step.port(o_tx_ready));
-    ASSERT_EQ(true, step.port(o_spi_clk));
-    ASSERT_EQ(false, step.port(o_spi_copi));
+    ASSERT_EQ(true, step.port(test_port_0));
+    ASSERT_EQ(false, step.port(test_port_1));
+    ASSERT_EQ(true, step.port(test_port_2));
+    ASSERT_EQ(false, step.port(test_port_3));
 }
 
 TEST(Step, ShouldHandleConst) {
     Step step;
-    step.port(i_clk) = true;
+    step.port(test_port_0) = true;
 
     const Step& constStep = step;
     ASSERT_EQ(1, constStep.getNumPorts());
-    ASSERT_EQ(true, constStep.port(i_clk));
+    ASSERT_EQ(true, constStep.port(test_port_0));
 }
 
 TEST(Step, ShouldFailIfConstPortDoesNotExist) {
     Step step;
     const Step& constStep = step;
-    ASSERT_ANY_THROW(constStep.port(i_clk));
+    ASSERT_ANY_THROW(constStep.port(test_port_0));
 }
 
 TEST(Step, ShouldGetPortMask) {
     Step step;
     ASSERT_EQ(0x00, step.getPortMask());
 
-    step.port(i_clk) = true;
+    step.port(test_port_0) = true;
     ASSERT_EQ(0x01, step.getPortMask());
     
-    step.port(o_tx_ready) = false;
-    step.port(o_spi_clk) = true;
-    step.port(o_spi_copi) = false;
+    step.port(test_port_1) = false;
+    step.port(test_port_2) = true;
+    step.port(test_port_3) = false;
     ASSERT_EQ(0x0F, step.getPortMask());
 }
 

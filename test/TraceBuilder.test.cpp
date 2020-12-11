@@ -2,7 +2,12 @@
 
 #include "TraceBuilder.h"
 
-#include "SPIControllerGenerated.h"
+namespace {
+    PORT_DESCRIPTION(0, test_port_0);
+    PORT_DESCRIPTION(1, test_port_1);
+    PORT_DESCRIPTION(2, test_port_2);
+    PORT_DESCRIPTION(3, test_port_3);
+}
 
 TEST(TraceBuilder, ShouldConstruct) {
     TraceBuilder builder;
@@ -16,7 +21,7 @@ TEST(TraceBuilder, ShouldConvertToEmptyTrace) {
 
 TEST(TraceBuilder, ShouldAddPort) {
     Trace trace = TraceBuilder()
-        .port(i_clk);
+        .port(test_port_0);
 
     ASSERT_EQ(trace.getSteps().size(), 0);
 
@@ -25,10 +30,10 @@ TEST(TraceBuilder, ShouldAddPort) {
 
 TEST(TraceBuilder, ShouldAddPorts) {
     Trace trace = TraceBuilder()
-        .port(i_clk)
-        .port(o_tx_ready)
-        .port(o_spi_clk)
-        .port(o_spi_copi);
+        .port(test_port_0)
+        .port(test_port_1)
+        .port(test_port_2)
+        .port(test_port_3);
 
     ASSERT_EQ(trace.getSteps().size(), 0);
 
@@ -37,34 +42,34 @@ TEST(TraceBuilder, ShouldAddPorts) {
 
 TEST(TraceBuilder, ShouldAddSignalToPortWithBinarySyntax) {
     Trace trace = TraceBuilder()
-        .port(i_clk).signal("10110111");
+        .port(test_port_0).signal("10110111");
 
     const std::vector<Step>& steps = trace.getSteps();
     ASSERT_EQ(steps.size(), 8);
-    ASSERT_EQ(steps[0].port(i_clk), 1);
-    ASSERT_EQ(steps[1].port(i_clk), 0);
-    ASSERT_EQ(steps[2].port(i_clk), 1);
-    ASSERT_EQ(steps[3].port(i_clk), 1);
-    ASSERT_EQ(steps[4].port(i_clk), 0);
-    ASSERT_EQ(steps[5].port(i_clk), 1);
-    ASSERT_EQ(steps[6].port(i_clk), 1);
-    ASSERT_EQ(steps[7].port(i_clk), 1);
+    ASSERT_EQ(steps[0].port(test_port_0), 1);
+    ASSERT_EQ(steps[1].port(test_port_0), 0);
+    ASSERT_EQ(steps[2].port(test_port_0), 1);
+    ASSERT_EQ(steps[3].port(test_port_0), 1);
+    ASSERT_EQ(steps[4].port(test_port_0), 0);
+    ASSERT_EQ(steps[5].port(test_port_0), 1);
+    ASSERT_EQ(steps[6].port(test_port_0), 1);
+    ASSERT_EQ(steps[7].port(test_port_0), 1);
 }
 
 TEST(TraceBuilder, ShouldAddSignalToPortWithHiLoSyntax) {
     Trace trace = TraceBuilder()
-        .port(i_clk).signal("___-__-_");
+        .port(test_port_0).signal("___-__-_");
 
     const std::vector<Step>& steps = trace.getSteps();
     ASSERT_EQ(steps.size(), 8);
-    ASSERT_EQ(steps[0].port(i_clk), 0);
-    ASSERT_EQ(steps[1].port(i_clk), 0);
-    ASSERT_EQ(steps[2].port(i_clk), 0);
-    ASSERT_EQ(steps[3].port(i_clk), 1);
-    ASSERT_EQ(steps[4].port(i_clk), 0);
-    ASSERT_EQ(steps[5].port(i_clk), 0);
-    ASSERT_EQ(steps[6].port(i_clk), 1);
-    ASSERT_EQ(steps[7].port(i_clk), 0);
+    ASSERT_EQ(steps[0].port(test_port_0), 0);
+    ASSERT_EQ(steps[1].port(test_port_0), 0);
+    ASSERT_EQ(steps[2].port(test_port_0), 0);
+    ASSERT_EQ(steps[3].port(test_port_0), 1);
+    ASSERT_EQ(steps[4].port(test_port_0), 0);
+    ASSERT_EQ(steps[5].port(test_port_0), 0);
+    ASSERT_EQ(steps[6].port(test_port_0), 1);
+    ASSERT_EQ(steps[7].port(test_port_0), 0);
 }
 
 TEST(TraceBuilder, ShouldFailToAddSignalWhenNoPortIsSelected) {
@@ -72,134 +77,134 @@ TEST(TraceBuilder, ShouldFailToAddSignalWhenNoPortIsSelected) {
 }
 
 TEST(TraceBuilder, ShouldFailToAddSignalWithUnknownCharacter) {
-    ASSERT_ANY_THROW(TraceBuilder().port(i_clk).signal("!"));
+    ASSERT_ANY_THROW(TraceBuilder().port(test_port_0).signal("!"));
 }
 
 TEST(TraceBuilder, ShouldAddMultipleSignalsToPort) {
     Trace trace = TraceBuilder()
-        .port(i_clk).signal("10110").signal("111");
+        .port(test_port_0).signal("10110").signal("111");
 
     const std::vector<Step>& steps = trace.getSteps();
     ASSERT_EQ(steps.size(), 8);
-    ASSERT_EQ(steps[0].port(i_clk), 1);
-    ASSERT_EQ(steps[1].port(i_clk), 0);
-    ASSERT_EQ(steps[2].port(i_clk), 1);
-    ASSERT_EQ(steps[3].port(i_clk), 1);
-    ASSERT_EQ(steps[4].port(i_clk), 0);
-    ASSERT_EQ(steps[5].port(i_clk), 1);
-    ASSERT_EQ(steps[6].port(i_clk), 1);
-    ASSERT_EQ(steps[7].port(i_clk), 1);
+    ASSERT_EQ(steps[0].port(test_port_0), 1);
+    ASSERT_EQ(steps[1].port(test_port_0), 0);
+    ASSERT_EQ(steps[2].port(test_port_0), 1);
+    ASSERT_EQ(steps[3].port(test_port_0), 1);
+    ASSERT_EQ(steps[4].port(test_port_0), 0);
+    ASSERT_EQ(steps[5].port(test_port_0), 1);
+    ASSERT_EQ(steps[6].port(test_port_0), 1);
+    ASSERT_EQ(steps[7].port(test_port_0), 1);
 }
 
 TEST(TraceBuilder, ShouldAddSignalsToMultiplePorts) {
     Trace trace = TraceBuilder()
-             .port(i_clk).signal("__")
-        .port(o_tx_ready).signal("_-")
-         .port(o_spi_clk).signal("-_")
-        .port(o_spi_copi).signal("--");
+        .port(test_port_0).signal("__")
+        .port(test_port_1).signal("_-")
+        .port(test_port_2).signal("-_")
+        .port(test_port_3).signal("--");
     
     const std::vector<Step>& steps = trace.getSteps();
     ASSERT_EQ(steps.size(), 2);
-    ASSERT_EQ(steps[0].port(i_clk), 0);
-    ASSERT_EQ(steps[1].port(i_clk), 0);
-    ASSERT_EQ(steps[0].port(o_tx_ready), 0);
-    ASSERT_EQ(steps[1].port(o_tx_ready), 1);
-    ASSERT_EQ(steps[0].port(o_spi_clk), 1);
-    ASSERT_EQ(steps[1].port(o_spi_clk), 0);
-    ASSERT_EQ(steps[0].port(o_spi_copi), 1);
-    ASSERT_EQ(steps[1].port(o_spi_copi), 1);
+    ASSERT_EQ(steps[0].port(test_port_0), 0);
+    ASSERT_EQ(steps[1].port(test_port_0), 0);
+    ASSERT_EQ(steps[0].port(test_port_1), 0);
+    ASSERT_EQ(steps[1].port(test_port_1), 1);
+    ASSERT_EQ(steps[0].port(test_port_2), 1);
+    ASSERT_EQ(steps[1].port(test_port_2), 0);
+    ASSERT_EQ(steps[0].port(test_port_3), 1);
+    ASSERT_EQ(steps[1].port(test_port_3), 1);
 }
 
 TEST(TraceBuilder, ShouldFailToGenerateTraceWhenPortsHaveSignalsWithDifferentLengths) {
     Trace trace;
     ASSERT_ANY_THROW(trace = TraceBuilder()
-             .port(i_clk).signal("__")
-        .port(o_tx_ready).signal("_")
+             .port(test_port_0).signal("__")
+        .port(test_port_1).signal("_")
     );
 }
 
 TEST(TraceBuilder, ShouldRepeatSignal) {
     Trace trace = TraceBuilder()
-        .port(i_clk).signal("10").repeat(4);
+        .port(test_port_0).signal("10").repeat(4);
 
     const std::vector<Step>& steps = trace.getSteps();
     ASSERT_EQ(steps.size(), 8);
-    ASSERT_EQ(steps[0].port(i_clk), 1);
-    ASSERT_EQ(steps[1].port(i_clk), 0);
-    ASSERT_EQ(steps[2].port(i_clk), 1);
-    ASSERT_EQ(steps[3].port(i_clk), 0);
-    ASSERT_EQ(steps[4].port(i_clk), 1);
-    ASSERT_EQ(steps[5].port(i_clk), 0);
-    ASSERT_EQ(steps[6].port(i_clk), 1);
-    ASSERT_EQ(steps[7].port(i_clk), 0);
+    ASSERT_EQ(steps[0].port(test_port_0), 1);
+    ASSERT_EQ(steps[1].port(test_port_0), 0);
+    ASSERT_EQ(steps[2].port(test_port_0), 1);
+    ASSERT_EQ(steps[3].port(test_port_0), 0);
+    ASSERT_EQ(steps[4].port(test_port_0), 1);
+    ASSERT_EQ(steps[5].port(test_port_0), 0);
+    ASSERT_EQ(steps[6].port(test_port_0), 1);
+    ASSERT_EQ(steps[7].port(test_port_0), 0);
 }
 
 TEST(TraceBuilder, ShouldRepeatEachStepOfSignal) {
     Trace trace = TraceBuilder()
-        .port(i_clk).signal("10").repeatEachStep(4);
+        .port(test_port_0).signal("10").repeatEachStep(4);
 
     const std::vector<Step>& steps = trace.getSteps();
     ASSERT_EQ(steps.size(), 8);
-    ASSERT_EQ(steps[0].port(i_clk), 1);
-    ASSERT_EQ(steps[1].port(i_clk), 1);
-    ASSERT_EQ(steps[2].port(i_clk), 1);
-    ASSERT_EQ(steps[3].port(i_clk), 1);
-    ASSERT_EQ(steps[4].port(i_clk), 0);
-    ASSERT_EQ(steps[5].port(i_clk), 0);
-    ASSERT_EQ(steps[6].port(i_clk), 0);
-    ASSERT_EQ(steps[7].port(i_clk), 0);
+    ASSERT_EQ(steps[0].port(test_port_0), 1);
+    ASSERT_EQ(steps[1].port(test_port_0), 1);
+    ASSERT_EQ(steps[2].port(test_port_0), 1);
+    ASSERT_EQ(steps[3].port(test_port_0), 1);
+    ASSERT_EQ(steps[4].port(test_port_0), 0);
+    ASSERT_EQ(steps[5].port(test_port_0), 0);
+    ASSERT_EQ(steps[6].port(test_port_0), 0);
+    ASSERT_EQ(steps[7].port(test_port_0), 0);
 }
 
 TEST(TraceBuilder, ShouldModifyPortsIndependently) {
     Trace trace = TraceBuilder()
-        .port(i_clk).signal("10").repeatEachStep(2)
-        .port(o_tx_ready).signal("10").repeat(2);
+        .port(test_port_0).signal("10").repeatEachStep(2)
+        .port(test_port_1).signal("10").repeat(2);
     
     const std::vector<Step>& steps = trace.getSteps();
     ASSERT_EQ(steps.size(), 4);
-    ASSERT_EQ(steps[0].port(i_clk), 1);
-    ASSERT_EQ(steps[1].port(i_clk), 1);
-    ASSERT_EQ(steps[2].port(i_clk), 0);
-    ASSERT_EQ(steps[3].port(i_clk), 0);
-    ASSERT_EQ(steps[0].port(o_tx_ready), 1);
-    ASSERT_EQ(steps[1].port(o_tx_ready), 0);
-    ASSERT_EQ(steps[2].port(o_tx_ready), 1);
-    ASSERT_EQ(steps[3].port(o_tx_ready), 0);
+    ASSERT_EQ(steps[0].port(test_port_0), 1);
+    ASSERT_EQ(steps[1].port(test_port_0), 1);
+    ASSERT_EQ(steps[2].port(test_port_0), 0);
+    ASSERT_EQ(steps[3].port(test_port_0), 0);
+    ASSERT_EQ(steps[0].port(test_port_1), 1);
+    ASSERT_EQ(steps[1].port(test_port_1), 0);
+    ASSERT_EQ(steps[2].port(test_port_1), 1);
+    ASSERT_EQ(steps[3].port(test_port_1), 0);
 
 }
 
 TEST(TraceBuilder, ShouldRepeatForAllPorts) {
     Trace trace = TraceBuilder()
-        .port(i_clk).signal("10")
-        .port(o_tx_ready).signal("01")
+        .port(test_port_0).signal("10")
+        .port(test_port_1).signal("01")
         .allPorts().repeat(2);
     
     const std::vector<Step>& steps = trace.getSteps();
     ASSERT_EQ(steps.size(), 4);
-    ASSERT_EQ(steps[0].port(i_clk), 1);
-    ASSERT_EQ(steps[1].port(i_clk), 0);
-    ASSERT_EQ(steps[2].port(i_clk), 1);
-    ASSERT_EQ(steps[3].port(i_clk), 0);
-    ASSERT_EQ(steps[0].port(o_tx_ready), 0);
-    ASSERT_EQ(steps[1].port(o_tx_ready), 1);
-    ASSERT_EQ(steps[2].port(o_tx_ready), 0);
-    ASSERT_EQ(steps[3].port(o_tx_ready), 1);
+    ASSERT_EQ(steps[0].port(test_port_0), 1);
+    ASSERT_EQ(steps[1].port(test_port_0), 0);
+    ASSERT_EQ(steps[2].port(test_port_0), 1);
+    ASSERT_EQ(steps[3].port(test_port_0), 0);
+    ASSERT_EQ(steps[0].port(test_port_1), 0);
+    ASSERT_EQ(steps[1].port(test_port_1), 1);
+    ASSERT_EQ(steps[2].port(test_port_1), 0);
+    ASSERT_EQ(steps[3].port(test_port_1), 1);
 }
 
 TEST(TraeBuilder, ShouldRepeatEachStepForAllPorts) {
     Trace trace = TraceBuilder()
-        .port(i_clk).signal("10")
-        .port(o_tx_ready).signal("01")
+        .port(test_port_0).signal("10")
+        .port(test_port_1).signal("01")
         .allPorts().repeatEachStep(2);
     
     const std::vector<Step>& steps = trace.getSteps();
     ASSERT_EQ(steps.size(), 4);
-    ASSERT_EQ(steps[0].port(i_clk), 1);
-    ASSERT_EQ(steps[1].port(i_clk), 1);
-    ASSERT_EQ(steps[2].port(i_clk), 0);
-    ASSERT_EQ(steps[3].port(i_clk), 0);
-    ASSERT_EQ(steps[0].port(o_tx_ready), 0);
-    ASSERT_EQ(steps[1].port(o_tx_ready), 0);
-    ASSERT_EQ(steps[2].port(o_tx_ready), 1);
-    ASSERT_EQ(steps[3].port(o_tx_ready), 1);
+    ASSERT_EQ(steps[0].port(test_port_0), 1);
+    ASSERT_EQ(steps[1].port(test_port_0), 1);
+    ASSERT_EQ(steps[2].port(test_port_0), 0);
+    ASSERT_EQ(steps[3].port(test_port_0), 0);
+    ASSERT_EQ(steps[0].port(test_port_1), 0);
+    ASSERT_EQ(steps[1].port(test_port_1), 0);
+    ASSERT_EQ(steps[2].port(test_port_1), 1);
+    ASSERT_EQ(steps[3].port(test_port_1), 1);
 }

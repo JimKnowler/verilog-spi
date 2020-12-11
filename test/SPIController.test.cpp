@@ -7,6 +7,7 @@
 #include "TraceBuilder.h"
 
 #include "TestBenchSPIController.h"
+using namespace spi_controller;
 
 using namespace testing;
 
