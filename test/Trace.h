@@ -29,6 +29,12 @@ public:
     /// @brief choose a console colour for a port ID
     static ConsoleColour::Colour getColourForPortId(uint32_t portId);
 
+    /// @brief get port description for a port ID
+    const PortDescription& getPortDescription(uint32_t portId) const;
+
+    /// @return true if this trace has this port
+    bool hasPort(uint32_t portId) const;
+
 private:
     
 

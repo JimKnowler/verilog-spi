@@ -11,17 +11,13 @@ size_t Step::getNumPorts() const {
 bool& Step::port(const PortDescription& portDesc) {
     uint32_t portId = portDesc.id();
 
-    return port(portId);
-}
-
-bool& Step::port(uint32_t portId) {
-    if (!hasPort(portId)) {
+    if (!hasPort(&portDesc)) {
         if (getNumPorts() == 32) {
             throw std::logic_error("unable to add more than 32 ports");
         }
     }
 
-    bool& value = ports[portId];
+    bool& value = ports[&portDesc];
 
     portMask |= (1 << portId);
 
@@ -29,17 +25,11 @@ bool& Step::port(uint32_t portId) {
 }
 
 const bool& Step::port(const PortDescription& portDesc) const {
-    const uint32_t portId = portDesc.id();
-
-    return port(portId);
-}
-
-const bool& Step::port(uint32_t portId) const {
-    auto it = ports.find(portId);
-
-    if (!hasPort(portId)) {
+    if (!hasPort(&portDesc)) {
         throw std::logic_error("unknown port");
     }
+
+    auto it = ports.find(&portDesc);
     
     return it->second;
 }
@@ -48,6 +38,16 @@ uint32_t Step::getPortMask() const {
     return portMask;
 }
 
-bool Step::hasPort(uint32_t portId) const {
-    return ports.find(portId) != ports.end();
+bool Step::hasPort(const PortDescription* pPortDesc) const {
+    return ports.find(pPortDesc) != ports.end();
+}
+
+const PortDescription& Step::getPortDescription(uint32_t portId) const {
+    for (auto it = ports.begin(); it != ports.end(); it++) {
+        if (it->first->id() == portId) {
+            return *(it->first);
+        }
+    }
+
+    throw std::logic_error("unknown port");
 }

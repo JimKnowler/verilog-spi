@@ -24,15 +24,17 @@ namespace matches_trace {
             if (0 == (portMaskOverlap & (1 << portId))) {
                 continue;
             }
+
+            const PortDescription& portDesc = a.getPortDescription(portId);
             
             for (size_t step=0; step < sizeA; step++) {
-                const bool valueA = stepsA[step].port(portId);
-                const bool valueB = stepsB[step].port(portId);
+                const bool valueA = stepsA[step].port(portDesc);
+                const bool valueB = stepsB[step].port(portDesc);
 
                 if (valueA != valueB) {
                     listener << "different value on " 
                             << ConsoleColour().fg(Trace::getColourForPortId(portId))
-                            << "port " << portId
+                            << portDesc.label()
                             << ConsoleColour().reset()
                             << " at step [" << step << "]: expected [" << valueB << "] != actual [" << valueA << "]\n";
 

@@ -1,5 +1,9 @@
 #include "PortDescription.h"
 
+PortDescription::PortDescription() : m_id(0xffffffff), m_label("undefined") {
+
+}
+
 PortDescription::PortDescription(uint32_t id, const char* label) : m_id(id), m_label(label) {
 
 }

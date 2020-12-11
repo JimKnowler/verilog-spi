@@ -15,7 +15,6 @@ public:
 
     // select the port to build
     TraceBuilder& port(const PortDescription& portDesc);
-    TraceBuilder& port(uint32_t portId);
 
     // append a signal to the current port
     TraceBuilder& signal(const std::string& stepValues);
@@ -35,9 +34,10 @@ public:
 
 private:
     struct Port {
-        Port(uint32_t _id);
+        Port(const PortDescription& portDesc);
 
-        uint32_t id;
+        const PortDescription& portDesc;
+
         // todo: support bit (bool) and multibit (byte/word) values
         std::vector<bool> stepValues;
     };

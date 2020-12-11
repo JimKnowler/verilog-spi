@@ -2,7 +2,10 @@
 
 #include "Trace.h"
 
-#include "SPIControllerGenerated.h"
+namespace {
+    PORT_DESCRIPTION(0, test_port_0);
+    PORT_DESCRIPTION(3, test_port_3);
+}
 
 TEST(Trace, ShouldConstruct) {
     Trace trace;
@@ -36,7 +39,7 @@ TEST(Trace, ShouldFailToAddStepsWithDifferentPorts) {
     trace.append(step1);
 
     Step step2;
-    step2.port(1) = false;
+    step2.port(test_port_3) = false;
     ASSERT_ANY_THROW(trace.append(step2));
 }
 
@@ -48,8 +51,8 @@ TEST(Trace, ShouldGetPortMaskForEmptyTrace) {
 
 TEST(Trace, ShouldGetPortMaskForNonEmptyTrace) {
     Step step;
-    step.port(0) = 1;
-    step.port(3) = 0;
+    step.port(test_port_0) = 1;
+    step.port(test_port_3) = 0;
 
     Trace trace;
     trace.append(step);
@@ -57,6 +60,41 @@ TEST(Trace, ShouldGetPortMaskForNonEmptyTrace) {
     // bits 0 and 3 should be set in mask
     // bits 0 = 1, bit 3 = 8
     ASSERT_EQ(0x00000009, trace.getPortMask());
+}
+
+TEST(Trace, ShouldGetPortDescription) {
+    Step step;
+    step.port(test_port_0) = 1;
+    step.port(test_port_3) = 0;
+
+    Trace trace;
+    trace.append(step);
+
+    EXPECT_EQ(&test_port_0, &trace.getPortDescription(0));
+    EXPECT_EQ(&test_port_3, &trace.getPortDescription(3));
+}
+
+TEST(Trace, ShouldFailToGetPortDescriptionForUnknownPort) {
+    Step step;
+    step.port(test_port_0) = 1;
+    step.port(test_port_3) = 0;
+
+    Trace trace;
+    trace.append(step);
+
+    ASSERT_ANY_THROW(trace.getPortDescription(1));
+    ASSERT_ANY_THROW(trace.getPortDescription(2));
+    ASSERT_ANY_THROW(trace.getPortDescription(4));
+}
+
+TEST(Trace, ShouldFailToGetPortDescriptionForEmptyTrace) {
+    Trace trace;
+
+    ASSERT_ANY_THROW(trace.getPortDescription(0)); 
+    ASSERT_ANY_THROW(trace.getPortDescription(1));
+    ASSERT_ANY_THROW(trace.getPortDescription(2));
+    ASSERT_ANY_THROW(trace.getPortDescription(3)); 
+    ASSERT_ANY_THROW(trace.getPortDescription(4));
 }
 
 

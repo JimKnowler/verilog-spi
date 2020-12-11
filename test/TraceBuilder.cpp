@@ -28,7 +28,8 @@ TraceBuilder::operator Trace() const {
         size_t index = 0;
         for (bool value : port->stepValues) {
             Step& step = steps[index];
-            step.port(port->id) = value;
+            
+            step.port(port->portDesc) = value;
             
             index ++;
         }
@@ -43,12 +44,7 @@ TraceBuilder::operator Trace() const {
 }
 
 TraceBuilder& TraceBuilder::port(const PortDescription& portDesc) {
-    const uint32_t portId = portDesc.id();
-    return port(portId);
-}
-
-TraceBuilder& TraceBuilder::port(uint32_t portId) {
-    auto port = std::make_shared<Port>(portId);
+    auto port = std::make_shared<Port>(portDesc);
     ports.push_back(port);
     currentPort = port;
 
@@ -134,4 +130,4 @@ void TraceBuilder::repeatEachStep(std::vector<bool>& stepValues, size_t repetiti
     stepValues = newStepValues;
 }
 
-TraceBuilder::Port::Port(uint32_t _id) : id(_id) {}
+TraceBuilder::Port::Port(const PortDescription& _portDesc) : portDesc(_portDesc) {}

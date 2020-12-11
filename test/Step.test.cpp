@@ -2,9 +2,15 @@
 
 using namespace testing;
 
+/// @todo remove this, and replace with local test port descriptions
 #include "SPIControllerGenerated.h"
 
 #include "Step.h"
+
+namespace {
+    PORT_DESCRIPTION(0, test_port_0);
+    PORT_DESCRIPTION(3, test_port_3);
+}
 
 TEST(Step, ShouldConstruct) {
     Step step;
@@ -70,19 +76,39 @@ TEST(Step, ShouldGetPortMask) {
 
 TEST(Step, ShouldAddMaximumOf32Ports) {
     Step step;
+    PortDescription portDescs[33];
     for (int i=0; i<32; i++) {
-        step.port(i) = true;
+        PortDescription& portDesc = portDescs[i];
+        portDesc = PortDescription(i, "temp test port");
+
+        step.port(portDesc) = true;
     }
 
     // should throw when adding 32nd port
-    ASSERT_ANY_THROW(step.port(32));
+    PortDescription portDesc32(32, "temp test port");
+    ASSERT_ANY_THROW(step.port(portDesc32));
 
     // should be able to access the first 32 ports
     for (int i=0; i<32; i++) {
-        ASSERT_EQ(true, step.port(i));
+        ASSERT_EQ(true, step.port(portDescs[i]));
     }
 }
 
-// todo
-// - registerPort() - here or in Trace?
-// - probe - independently of VSPIController header
+TEST(Step, ShouldGetPortDescription) {
+    Step step;
+    step.port(test_port_0) = 1;
+    step.port(test_port_3) = 0;
+
+    EXPECT_EQ(&test_port_0, &step.getPortDescription(0));
+    EXPECT_EQ(&test_port_3, &step.getPortDescription(3));
+}
+
+TEST(Step, ShouldFailToGetPortDescriptionForUnknownPortId) {
+Step step;
+    step.port(test_port_0) = 1;
+    step.port(test_port_3) = 0;
+
+    ASSERT_ANY_THROW(step.getPortDescription(1));
+    ASSERT_ANY_THROW(step.getPortDescription(2));
+    ASSERT_ANY_THROW(step.getPortDescription(4));
+}

@@ -6,6 +6,7 @@
 
 class PortDescription {
 public:
+    PortDescription();
     PortDescription(uint32_t id, const char* label);
 
     uint32_t id() const;

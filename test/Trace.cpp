@@ -1,5 +1,7 @@
 #include "Trace.h"
 
+#include <string.h>
+
 Trace::Trace() {
 }
 
@@ -28,20 +30,15 @@ const uint32_t Trace::getPortMask() const {
     }
 }
 
-/// @todo create component that encapsulates TTY Colour based on 
-///       https://stackoverflow.com/questions/33309136/change-color-in-os-x-console-output
+bool Trace::hasPort(uint32_t portId) const {
+    return 0 != (getPortMask() & (1 << portId));
+}
 
-std::ostream& operator<<(std::ostream &os, const Trace& trace) {
-    os << "\n";
-    os << ConsoleColour().reset();
+static void renderTimeline(std::ostream& os, size_t x, size_t numSteps) {
+    char buffer[64];
 
-    const uint32_t portMask = trace.getPortMask();
-
-    auto& steps = trace.getSteps();
-    size_t numSteps = steps.size();
-    
-    // output a timeline
-    os << "          ";
+    sprintf(buffer, "%*s", int(x), " ");
+    os << buffer;
 
     const int kDividerSize = 5;
     int numDividers = (numSteps + kDividerSize - 1) / kDividerSize;
@@ -53,34 +50,63 @@ std::ostream& operator<<(std::ostream &os, const Trace& trace) {
     }
 
     os << "\n";
+}
 
-    // output a row for each port
+static void renderPort(std::ostream& os, size_t maxPortLabelSize, const PortDescription& portDesc, const std::vector<Step>& steps) {
+    uint32_t portId = portDesc.id();
+
+    ConsoleColour::Colour portColour = Trace::getColourForPortId(portId);
+
+    os << ConsoleColour().fg(portColour);
+
+    char buffer[64];
+    sprintf(buffer, "  %*s ", int(maxPortLabelSize), portDesc.label());
+    os << buffer;
+
+    os << ConsoleColour().fg(ConsoleColour::kBlack).bg(portColour);
+
+    
+    for (auto& step : steps) {
+        os << (step.port(portDesc) ? "-" : "_");
+    }
+
+    os << ConsoleColour().reset();
+    os << "\n";
+}
+
+std::ostream& operator<<(std::ostream &os, const Trace& trace) {
+    os << "\n";
+    os << ConsoleColour().reset();
+
+    auto& steps = trace.getSteps();
+    
+    // calculate the maximum length of the port label
+    size_t maxPortLabelSize = 1;
     for (uint32_t portId=0; portId<32; portId++) {
-        if (0 == (portMask & (1 << portId))) {
+        if (!trace.hasPort(portId)) {
             continue;
         }
 
-        ConsoleColour::Colour portColour = Trace::getColourForPortId(portId);
-
-        os << ConsoleColour().fg(portColour);
-
-        /// @todo human readable label for each port
-
-        char portLabel[32];
-        sprintf(portLabel, "  port %2u ", portId);
-        os << portLabel;
-
-        os << ConsoleColour().fg(ConsoleColour::kBlack).bg(portColour);
-
-        for (size_t step=0; step < numSteps; step++) {
-            os << (steps[step].port(portId) ? "-" : "_");
-        }
-
-        os << ConsoleColour().reset();
-        os << "\n";
+        const PortDescription& portDesc = trace.getPortDescription(portId);
+        const size_t labelSize = strlen(portDesc.label());
+        maxPortLabelSize = std::max(labelSize, maxPortLabelSize);
     }
 
-    
+    // limit maximum port label size for our 64 byte buffer
+    // note: -4 = 1 (null terminator) + 3 (padding spaces used in printf for right-justified port label)
+    maxPortLabelSize = std::min(maxPortLabelSize, size_t(64 - 4));
+
+    renderTimeline(os, maxPortLabelSize + 3, steps.size());
+
+    for (uint32_t portId=0; portId<32; portId++) {
+        if (!trace.hasPort(portId)) {
+            continue;
+        }
+
+        const PortDescription& portDesc = trace.getPortDescription(portId);
+
+        renderPort(os, maxPortLabelSize, portDesc, steps);
+    }
 
     return os;
 }
@@ -89,4 +115,14 @@ ConsoleColour::Colour Trace::getColourForPortId(uint32_t portId) {
     ConsoleColour::Colour colour = ConsoleColour::Colour(1 + (portId % 7));
 
     return colour;
+}
+
+const PortDescription& Trace::getPortDescription(uint32_t portId) const {
+    if (steps.empty()) {
+        throw std::logic_error("unable to getPortDescription when trace is empty");
+    }
+
+    const Step& step = steps[0];
+    
+    return step.getPortDescription(portId);
 }
