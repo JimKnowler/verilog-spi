@@ -35,6 +35,14 @@ public:
     /// @return true if this trace has this port
     bool hasPort(uint32_t portId) const;
 
+    /// @brief support for rendering a port
+    static void renderPort(std::ostream& os, size_t maxPortLabelSize, const PortDescription& portDesc, const std::vector<Step>& steps);
+
+    /// @brief get the size of the largest port label (characters)
+    size_t getMaxPortLabelSize() const;
+    
+    /// @brief render a diff between two ports, that lines up with output from renderPort()
+    static void renderPortDiff(std::ostream& os, char diffCharacter, ConsoleColour::Colour, size_t maxPortLabelSize, const PortDescription& portDesc, const std::vector<Step>& stepsActual, const std::vector<Step>& stepsExpected);
 private:
     
 

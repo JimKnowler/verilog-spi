@@ -52,7 +52,7 @@ static void renderTimeline(std::ostream& os, size_t x, size_t numSteps) {
     os << "\n";
 }
 
-static void renderPort(std::ostream& os, size_t maxPortLabelSize, const PortDescription& portDesc, const std::vector<Step>& steps) {
+void Trace::renderPort(std::ostream& os, size_t maxPortLabelSize, const PortDescription& portDesc, const std::vector<Step>& steps) {
     uint32_t portId = portDesc.id();
 
     ConsoleColour::Colour portColour = Trace::getColourForPortId(portId);
@@ -80,17 +80,7 @@ std::ostream& operator<<(std::ostream &os, const Trace& trace) {
 
     auto& steps = trace.getSteps();
     
-    // calculate the maximum length of the port label
-    size_t maxPortLabelSize = 1;
-    for (uint32_t portId=0; portId<32; portId++) {
-        if (!trace.hasPort(portId)) {
-            continue;
-        }
-
-        const PortDescription& portDesc = trace.getPortDescription(portId);
-        const size_t labelSize = strlen(portDesc.label());
-        maxPortLabelSize = std::max(labelSize, maxPortLabelSize);
-    }
+    size_t maxPortLabelSize = trace.getMaxPortLabelSize();
 
     // limit maximum port label size for our 64 byte buffer
     // note: -4 = 1 (null terminator) + 3 (padding spaces used in printf for right-justified port label)
@@ -105,7 +95,7 @@ std::ostream& operator<<(std::ostream &os, const Trace& trace) {
 
         const PortDescription& portDesc = trace.getPortDescription(portId);
 
-        renderPort(os, maxPortLabelSize, portDesc, steps);
+        Trace::renderPort(os, maxPortLabelSize, portDesc, steps);
     }
 
     return os;
@@ -125,4 +115,47 @@ const PortDescription& Trace::getPortDescription(uint32_t portId) const {
     const Step& step = steps[0];
     
     return step.getPortDescription(portId);
+}
+
+size_t Trace::getMaxPortLabelSize() const {
+    size_t maxPortLabelSize = 10;
+    
+    for (uint32_t portId=0; portId<32; portId++) {
+        if (!hasPort(portId)) {
+            continue;
+        }
+
+        const PortDescription& portDesc = getPortDescription(portId);
+        const size_t labelSize = strlen(portDesc.label());
+        maxPortLabelSize = std::max(labelSize, maxPortLabelSize);
+    }
+
+    return maxPortLabelSize;
+}
+
+void Trace::renderPortDiff(std::ostream& os, char diffCharacter, ConsoleColour::Colour diffColour, size_t maxPortLabelSize, const PortDescription& portDesc, const std::vector<Step>& stepsActual, const std::vector<Step>& stepsExpected) {
+    std::vector<size_t> diff;
+    for (size_t i = 0; i<stepsExpected.size(); i++) {
+        if (stepsExpected[i].port(portDesc) != stepsActual[i].port(portDesc)) {
+            diff.push_back(i);
+        }
+    }
+
+    const size_t traceStartX = maxPortLabelSize + 3;        // note: '+3' as used in renderPort()
+    for (size_t i=0; i<traceStartX; i++) {
+        os << " ";
+    }
+
+    size_t outputPos = 0;
+    for (size_t diffPos : diff) {
+        while (outputPos < diffPos) {
+            os << " ";
+            outputPos += 1;
+        }
+
+        os << ConsoleColour().fg(diffColour) << diffCharacter << ConsoleColour().reset();
+        outputPos += 1;
+    }
+
+    os << "\n";
 }
