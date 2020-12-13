@@ -11,76 +11,45 @@ Test Driven Implementation of Serial Peripheral Interface (SPI) protocol in Veri
 
 # Dependencies
 
-- [GoogleTest](https://github.com/google/googletest/)
+- [Bazel](https://docs.bazel.build/versions/3.7.0/install.html)
 
-While standing in googletest's root directory.
-```
-$ mkdir build
-$ cd build
-$ cmake ..
-$ make
-$ sudo make install
-```
 
-- [Verilator](https://github.com/verilator/verilator)
+# Build & Run Tests
+
+While standing in project's root directory, use Bazel to build the test target:
 
 ```
-$ brew install verilator
+$ bazel build //test:test
 ```
 
-# Build & Run
-
-While standing in project's root directory.
+The test executable can be run from the 'bazel-bin' output directory with:
 
 ```
-$ make
-$ ./test
+$ ./bazel-bin/test/test --gtest_brief=1
 ```
 
-To do a full rebuild
+# NOTES
 
-```
-$ make rebuild
-$ ./test
-```
+## SPI Terminology
 
-To clean out the build directory
-```
-$ make clean
-```
-
-# BAZEL
-
-- should remove need for installing gtest/verilator dependencies separately
-
-> $ bazel build //test:test
-
-> $ ./bazel-bin/test/test
+Preferring use of [CONTROLLER and PERIPHERAL](https://www.sparkfun.com/spi_signal_names?_ga=2.39707619.1760252179.1606575342-655091437.1606575342) terminology:
 
 
 
 # TODO
 
-- note use of CONTROLLER and PERIPHERAL https://www.sparkfun.com/spi_signal_names?_ga=2.39707619.1760252179.1606575342-655091437.1606575342
 
+- support generation of C++ test framework code from verilog/verilator output
 - add option for generating traces from tests
   - command line option?
   - TestBench generates a trace for each test + writes after every tick?
   - see https://zipcpu.com/blog/2017/06/21/looking-at-verilator.html for examples
-
 - write SPIController with tests
 - write SPIPeripheral with tests
 - write integration tests for SPIController + SPIPeripheral
-- improve build system
-  - improvements to makefile
-    - augment makefile to be sensitive to header files
-    - refactor makefile - generic rules for Verilation of Verilog modules
-    - refactor makefile - compile to object files in build directory separately so final build step is just linker
-  - convert from makefile to CMake or Bazel (python?)
 - support testing all 4 SPI modes by using verilator arg at verilation time, such as '-GSPI_MODE=3' 
    - generate 4 versions of SPIController and SPIPeripheral
    - run unit tests on each version
 - support testing different clock speeds on SPIController by using verilator arg at verilation time, such as '-GCLKS_PER_HALF_BIT=3'
    - generate multiple versions of SPIController
    - run unit tests on each version
-- support generation of C++ test framework code from verilog/verilator output
