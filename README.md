@@ -62,13 +62,16 @@ $ make clean
 - write SPIController with tests
 - write SPIPeripheral with tests
 - write integration tests for SPIController + SPIPeripheral
-- augment makefile to be sensitive to header files
-- refactor makefile - generic rules for Verilation of Verilog modules
-- refactor makefile - compile to object files in build directory separately so final build step is just linker
-- convert from makefile to CMake or Bazel (python?)
+- improve build system
+  - improvements to makefile
+    - augment makefile to be sensitive to header files
+    - refactor makefile - generic rules for Verilation of Verilog modules
+    - refactor makefile - compile to object files in build directory separately so final build step is just linker
+  - convert from makefile to CMake or Bazel (python?)
 - support testing all 4 SPI modes by using verilator arg at verilation time, such as '-GSPI_MODE=3' 
    - generate 4 versions of SPIController and SPIPeripheral
    - run unit tests on each version
 - support testing different clock speeds on SPIController by using verilator arg at verilation time, such as '-GCLKS_PER_HALF_BIT=3'
    - generate multiple versions of SPIController
    - run unit tests on each version
+- support generation of C++ test framework code from verilog/verilator output
