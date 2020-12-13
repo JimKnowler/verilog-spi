@@ -34,10 +34,7 @@ $ ./bazel-bin/test/test --gtest_brief=1
 
 Preferring use of [CONTROLLER and PERIPHERAL](https://www.sparkfun.com/spi_signal_names?_ga=2.39707619.1760252179.1606575342-655091437.1606575342) terminology:
 
-
-
 # TODO
-
 
 - support generation of C++ test framework code from verilog/verilator output
 - add option for generating traces from tests

@@ -8,7 +8,7 @@ cc_test(
     ),
     deps = [
         "@com_google_googletest//:gtest",
-        "//source:verilog_counter",
-        "//source:verilog_spicontroller"
+        "//source:verilator_counter",
+        "//source:verilator_spicontroller"
     ],
 )
