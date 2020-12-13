@@ -49,6 +49,15 @@ To clean out the build directory
 $ make clean
 ```
 
+# BAZEL
+
+- should remove need for installing gtest/verilator dependencies separately
+
+> $ bazel build //test:test
+
+> $ ./bazel-bin/test/test
+
+
 
 # TODO
 

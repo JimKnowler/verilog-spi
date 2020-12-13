@@ -54,6 +54,7 @@ TEST(TestBench, ShouldInvokeOnStep) {
 TEST(TestBench, ShouldAccessCore) {
     TestBench<VCounter> testBench;
     VCounter& core = testBench.core();
+    ASSERT_NE(&core, nullptr);
 }
 
 TEST(TestBench, ShouldGetStepCount) {

@@ -1,0 +1,14 @@
+cc_test(
+    name = "test",
+    srcs = glob(
+        include =[
+            "**/*.cpp",
+            "**/*.h"
+        ]
+    ),
+    deps = [
+        "@com_google_googletest//:gtest",
+        "//source:verilog_counter",
+        "//source:verilog_spicontroller"
+    ],
+)
