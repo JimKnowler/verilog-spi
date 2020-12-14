@@ -2,38 +2,48 @@
 
 #include "TestBench.h"
 
-#include "VCounter.h"
-
 using namespace testing;
 
+namespace {
+    class TestCore {
+    public:
+        void eval() {
+            /// @todo test when eval is called
+        }
+
+        uint8_t i_clk;
+        uint8_t i_reset;
+    };
+}
+
 TEST(TestBench, ShouldConstruct) {
-    TestBench<VCounter> testBench;
+    TestBench<TestCore> testBench;
 }
 
 TEST(TestBench, ShouldReset) {
-    TestBench<VCounter> testBench;
+    TestBench<TestCore> testBench;
     testBench.reset();
 
     /// @todo test that underlying clk is set and eval'd
 }
 
 TEST(TestBench, ShouldTick) {
-    TestBench<VCounter> testBench;
+    TestBench<TestCore> testBench;
     testBench.tick();
 }
 
 TEST(TestBench, ShouldTickMultipleTimes) {
-    TestBench<VCounter> testBench;
+    TestBench<TestCore> testBench;
     testBench.tick(10);
 }
 
 TEST(TestBench, ShouldNextStep) {
-    TestBench<VCounter> testBench;
+    TestBench<TestCore> testBench;
     testBench.nextStep();
 }
 
 TEST(TestBench, ShouldInvokeOnStep) {
-    class MyTestBench : public TestBench<VCounter> {
+    class MyTestBench : public TestBench<TestCore> {
     public:
         int counter = 0;
 
@@ -52,13 +62,13 @@ TEST(TestBench, ShouldInvokeOnStep) {
 }
 
 TEST(TestBench, ShouldAccessCore) {
-    TestBench<VCounter> testBench;
-    VCounter& core = testBench.core();
+    TestBench<TestCore> testBench;
+    TestCore& core = testBench.core();
     ASSERT_NE(&core, nullptr);
 }
 
 TEST(TestBench, ShouldGetStepCount) {
-    TestBench<VCounter> testBench;
+    TestBench<TestCore> testBench;
     ASSERT_EQ(0, testBench.stepCount());
 
     testBench.nextStep();
