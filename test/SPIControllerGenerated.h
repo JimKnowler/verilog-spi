@@ -1,6 +1,6 @@
 #pragma once
 
-#include "PortDescription.h"
+#include "gtest-verilog/PortDescription.h"
 
 /// @brief Expectation is that this would be generated from verilator output with python script
 

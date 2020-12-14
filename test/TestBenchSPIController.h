@@ -1,9 +1,11 @@
 #pragma once
 
-#include "TestBench.h"
+#include "gtest-verilog/TestBench.h"
+#include "gtest-verilog/Trace.h"
+
 #include "VSPIController.h"
+
 #include "SPIControllerGenerated.h"
-#include "Trace.h"
 
 // @strategy - put all of the VSPIController specific code here
 //             that we could generate later with Python script..

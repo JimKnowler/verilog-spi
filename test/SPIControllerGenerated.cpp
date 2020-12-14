@@ -1,7 +1,5 @@
 #include "SPIControllerGenerated.h"
 
-#include "PortDescription.h"
-
 /// @brief Expectation is that this would be generated from verilator output with python script
 
 namespace spi_controller {

@@ -1,36 +1,14 @@
-cc_library(
-    name = "gtest-verilog",
-    srcs = glob(
-        include = [
-            "**/*.cpp"
-            
-        ],
-        exclude = [
-            "main.cpp",
-            "SPIController*.*",
-            "Counter*.*",
-        ]
-    ),
-    hdrs = glob([
-        "**/*.h"
-    ]),
-    deps = [
-        "@com_google_googletest//:gtest",
-    ]
-)
-
 cc_test(
     name = "test",
     srcs = glob(
         include =[
-            "main.cpp",
-            "SPIController*.*",
-            "Counter*.*"
+            "**/*.cpp",
+            "**/*.h"
         ]
     ),
     deps = [
         "@com_google_googletest//:gtest",
-        ":gtest-verilog",
+        "//gtest-verilog:lib",
         "//source:verilator_counter",
         "//source:verilator_spicontroller",
     ],

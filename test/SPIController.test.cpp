@@ -2,14 +2,15 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+using namespace testing;
 
-#include "MatchesTrace.h"
-#include "TraceBuilder.h"
+#include "gtest-verilog/MatchesTrace.h"
+#include "gtest-verilog/TraceBuilder.h"
 
 #include "TestBenchSPIController.h"
 using namespace spi_controller;
 
-using namespace testing;
+
 
 namespace {
     class SPIController : public ::testing::Test {

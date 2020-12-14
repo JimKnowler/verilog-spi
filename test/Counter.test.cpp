@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "VCounter.h"
-#include "TestBench.h"
+#include "gtest-verilog/TestBench.h"
 
 namespace {
     class Counter : public ::testing::Test {

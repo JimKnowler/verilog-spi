@@ -1,0 +1,13 @@
+cc_library(
+    name = "lib",
+    srcs = glob([
+        "**/*.cpp"
+    ]),
+    hdrs = glob([
+        "**/*.h"
+    ]),
+    deps = [
+        "@com_google_googletest//:gtest",
+    ],
+    visibility = ["//visibility:public"]
+)
