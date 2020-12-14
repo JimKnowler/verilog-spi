@@ -7,4 +7,15 @@ namespace spi_controller {
     PORT_DESCRIPTION(1, o_tx_ready);
     PORT_DESCRIPTION(2, o_spi_clk);
     PORT_DESCRIPTION(3, o_spi_copi);
+
+    void TestBench::onNextStep() {
+        Step step;
+        
+        step.port(i_clk) = core().i_clk;
+        step.port(o_tx_ready) = core().o_tx_ready;
+        step.port(o_spi_clk) = core().o_spi_clk;
+        step.port(o_spi_copi) = core().o_spi_copi;
+
+        trace.append(step);
+    }
 }

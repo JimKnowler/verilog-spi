@@ -15,16 +15,7 @@ namespace spi_controller {
 
     class TestBench : public ::TestBench<VSPIController> {
     public:
-        virtual void onNextStep() override {
-            Step step;
-            
-            step.port(i_clk) = core().i_clk;
-            step.port(o_tx_ready) = core().o_tx_ready;
-            step.port(o_spi_clk) = core().o_spi_clk;
-            step.port(o_spi_copi) = core().o_spi_copi;
-
-            trace.append(step);
-        }
+        virtual void onNextStep() override;
 
         Trace trace;
     };
