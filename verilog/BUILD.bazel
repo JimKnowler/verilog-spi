@@ -1,15 +1,13 @@
 load("@rules_verilator//verilator:defs.bzl", "verilator_cc_library")
 
 verilator_cc_library(
-    name = "verilator_counter",
-    mtop = "Counter",
+    name = "Counter",
     srcs = ["Counter.v"],
     visibility = ["//visibility:public"],
 )
 
 verilator_cc_library(
-    name = "verilator_spicontroller",
-    mtop = "SPIController",
+    name = "SPIController",
     srcs = ["SPIController.v"],
     visibility = ["//visibility:public"],
 )
