@@ -1,4 +1,4 @@
-#include "CounterGenerated.h"
+#include "Counter.gtest-verilog.h"
 
 namespace counter {
     PORT_DESCRIPTION(0, i_clk);

@@ -7,10 +7,8 @@ using namespace testing;
 #include "gtest-verilog/MatchesTrace.h"
 #include "gtest-verilog/TraceBuilder.h"
 
-#include "TestBenchSPIController.h"
+#include "SPIController.gtest-verilog.h"
 using namespace spi_controller;
-
-
 
 namespace {
     class SPIController : public ::testing::Test {
@@ -20,7 +18,7 @@ namespace {
             testBench.trace.clear();
         }
 
-        TestBenchSPIController testBench;
+        ::spi_controller::TestBench testBench;
     };
 }
 

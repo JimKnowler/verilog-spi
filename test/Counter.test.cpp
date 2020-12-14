@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
-#include "VCounter.h"
-#include "gtest-verilog/TestBench.h"
+using namespace testing;
+
+#include "Counter.gtest-verilog.h"
+using namespace counter;
 
 namespace {
     class Counter : public ::testing::Test {
@@ -11,7 +13,7 @@ namespace {
         void TearDown() override {
         }
 
-        TestBench<VCounter> testBench;
+        ::counter::TestBench testBench;
     };
 }
 
