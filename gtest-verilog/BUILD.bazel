@@ -1,10 +1,10 @@
 cc_library(
     name = "lib",
     srcs = glob([
-        "**/*.cpp"
+        "*.cpp"
     ]),
     hdrs = glob([
-        "**/*.h"
+        "*.h"
     ]),
     deps = [
         "@com_google_googletest//:gtest",

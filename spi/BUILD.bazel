@@ -1,3 +1,10 @@
+load("@rules_verilator//verilator:defs.bzl", "verilator_cc_library")
+
+verilator_cc_library(
+    name = "SPIController",
+    srcs = ["SPIController.v"],
+)
+
 cc_test(
     name = "test",
     srcs = glob(
@@ -9,7 +16,6 @@ cc_test(
     deps = [
         "@com_google_googletest//:gtest",
         "//gtest-verilog:lib",
-        "//verilog:Counter",
-        "//verilog:SPIController",
+        ":SPIController",
     ],
 )
