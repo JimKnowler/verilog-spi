@@ -1,14 +1,14 @@
 #include <gmock/gmock.h>
 
-#include "MatchesTrace.h"
-#include "TraceBuilder.h"
+#include "gtest-verilog/MatchesTrace.h"
+#include "gtest-verilog/TraceBuilder.h"
 
 using namespace ::testing;
 
 namespace {
-    PORT_DESCRIPTION(0, test_port_0);
-    PORT_DESCRIPTION(1, test_port_1);
-    PORT_DESCRIPTION(2, test_port_2);
+    PORT_DESCRIPTION(0, test_port_0, 1);
+    PORT_DESCRIPTION(1, test_port_1, 1);
+    PORT_DESCRIPTION(2, test_port_2, 1);
 }
 
 TEST(MatchesTrace, ShouldMatchEmptyTraces) {

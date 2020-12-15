@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "TestBench.h"
+#include "gtest-verilog/TestBench.h"
 
 using namespace testing;
 

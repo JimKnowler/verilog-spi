@@ -2,13 +2,13 @@
 
 using namespace testing;
 
-#include "Step.h"
+#include "gtest-verilog/Step.h"
 
 namespace {
-    PORT_DESCRIPTION(0, test_port_0);
-    PORT_DESCRIPTION(1, test_port_1);
-    PORT_DESCRIPTION(2, test_port_2);
-    PORT_DESCRIPTION(3, test_port_3);
+    PORT_DESCRIPTION(0, test_port_0, 1);
+    PORT_DESCRIPTION(1, test_port_1, 1);
+    PORT_DESCRIPTION(2, test_port_2, 1);
+    PORT_DESCRIPTION(3, test_port_3, 1);
 }
 
 TEST(Step, ShouldConstruct) {
@@ -78,13 +78,13 @@ TEST(Step, ShouldAddMaximumOf32Ports) {
     PortDescription portDescs[33];
     for (int i=0; i<32; i++) {
         PortDescription& portDesc = portDescs[i];
-        portDesc = PortDescription(i, "temp test port");
+        portDesc = PortDescription(i, "temp test port", 1);
 
         step.port(portDesc) = true;
     }
 
     // should throw when adding 32nd port
-    PortDescription portDesc32(32, "temp test port");
+    PortDescription portDesc32(32, "temp test port", 1);
     ASSERT_ANY_THROW(step.port(portDesc32));
 
     // should be able to access the first 32 ports

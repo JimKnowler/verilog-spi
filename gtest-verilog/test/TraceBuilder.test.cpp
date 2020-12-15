@@ -1,12 +1,12 @@
 #include <gtest/gtest.h>
 
-#include "TraceBuilder.h"
+#include "gtest-verilog/TraceBuilder.h"
 
 namespace {
-    PORT_DESCRIPTION(0, test_port_0);
-    PORT_DESCRIPTION(1, test_port_1);
-    PORT_DESCRIPTION(2, test_port_2);
-    PORT_DESCRIPTION(3, test_port_3);
+    PORT_DESCRIPTION(0, test_port_0, 1);
+    PORT_DESCRIPTION(1, test_port_1, 1);
+    PORT_DESCRIPTION(2, test_port_2, 1);
+    PORT_DESCRIPTION(3, test_port_3, 1);
 }
 
 TEST(TraceBuilder, ShouldConstruct) {

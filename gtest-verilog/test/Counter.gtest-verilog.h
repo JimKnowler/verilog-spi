@@ -10,7 +10,7 @@
 namespace counter {
     extern PortDescription i_clk;
     extern PortDescription i_reset;
-    /// @todo extern PortDescription o_value;     // 16bits wide}
+    extern PortDescription o_value;
 
     class TestBench : public ::TestBench<VCounter> {
     public:
