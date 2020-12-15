@@ -8,7 +8,7 @@ size_t Step::getNumPorts() const {
     return ports.size();
 }
 
-bool& Step::port(const PortDescription& portDesc) {
+PortValue& Step::port(const PortDescription& portDesc) {
     uint32_t portId = portDesc.id();
 
     if (!hasPort(&portDesc)) {
@@ -17,14 +17,14 @@ bool& Step::port(const PortDescription& portDesc) {
         }
     }
 
-    bool& value = ports[&portDesc];
+    PortValue& value = ports[&portDesc];
 
     portMask |= (1 << portId);
 
     return value;
 }
 
-const bool& Step::port(const PortDescription& portDesc) const {
+const PortValue& Step::port(const PortDescription& portDesc) const {
     if (!hasPort(&portDesc)) {
         throw std::logic_error("unknown port");
     }

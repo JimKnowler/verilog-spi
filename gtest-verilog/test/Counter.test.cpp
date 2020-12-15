@@ -42,3 +42,6 @@ TEST_F(Counter, ShouldIncrementRepeatedly) {
     // todo: use this to test Traces with multi-bit values
     ASSERT_EQ(testBench.core().o_value, 10);
 }
+
+// TODO: add tests that use TraceBuilder and MatchesTrace, so that those APIs are tested with
+//       cpp generated from verilog

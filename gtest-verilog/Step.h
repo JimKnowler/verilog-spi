@@ -4,20 +4,21 @@
 #include <map>
 
 #include "PortDescription.h"
+#include "PortValue.h"
 
 /// @class Step
 /// @brief encapsulate state of ports at a step in a simulation
 class Step {
 public:
-    Step();
+    Step(); 
 
     // @brief accessor for port value
     // @note adds port if it doesn't exist
-    bool& port(const PortDescription& portDesc);
+    PortValue& port(const PortDescription& portDesc);
 
     // @brief const accessor for port
     // @note throw exception if port doesn't exist
-    const bool& port(const PortDescription& portDesc) const;
+    const PortValue& port(const PortDescription& portDesc) const;
 
     /// @brief Get the number of ports stored by this step
     size_t getNumPorts() const;
@@ -31,7 +32,7 @@ public:
 private:
     bool hasPort(const PortDescription* pPortDesc) const;
 
-    std::map<const PortDescription*, bool> ports;
+    std::map<const PortDescription*, PortValue> ports;
 
     uint32_t portMask;
 };

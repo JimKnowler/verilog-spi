@@ -11,10 +11,10 @@ namespace spi_controller {
     void TestBench::onNextStep() {
         Step step;
         
-        step.port(i_clk) = core().i_clk;
-        step.port(o_tx_ready) = core().o_tx_ready;
-        step.port(o_spi_clk) = core().o_spi_clk;
-        step.port(o_spi_copi) = core().o_spi_copi;
+        step.port(i_clk) = (1 == core().i_clk);
+        step.port(o_tx_ready) = (1 == core().o_tx_ready);
+        step.port(o_spi_clk) = (1 == core().o_spi_clk);
+        step.port(o_spi_copi) = (1 == core().o_spi_copi);
 
         trace.append(step);
     }

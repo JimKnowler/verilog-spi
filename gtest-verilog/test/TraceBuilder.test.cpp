@@ -46,14 +46,14 @@ TEST(TraceBuilder, ShouldAddSignalToPortWithBinarySyntax) {
 
     const std::vector<Step>& steps = trace.getSteps();
     ASSERT_EQ(steps.size(), 8);
-    ASSERT_EQ(steps[0].port(test_port_0), 1);
-    ASSERT_EQ(steps[1].port(test_port_0), 0);
-    ASSERT_EQ(steps[2].port(test_port_0), 1);
-    ASSERT_EQ(steps[3].port(test_port_0), 1);
-    ASSERT_EQ(steps[4].port(test_port_0), 0);
-    ASSERT_EQ(steps[5].port(test_port_0), 1);
-    ASSERT_EQ(steps[6].port(test_port_0), 1);
-    ASSERT_EQ(steps[7].port(test_port_0), 1);
+    ASSERT_EQ(std::get<bool>(steps[0].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[1].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[2].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[3].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[4].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[5].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[6].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[7].port(test_port_0)), true);
 }
 
 TEST(TraceBuilder, ShouldAddSignalToPortWithHiLoSyntax) {
@@ -62,14 +62,14 @@ TEST(TraceBuilder, ShouldAddSignalToPortWithHiLoSyntax) {
 
     const std::vector<Step>& steps = trace.getSteps();
     ASSERT_EQ(steps.size(), 8);
-    ASSERT_EQ(steps[0].port(test_port_0), 0);
-    ASSERT_EQ(steps[1].port(test_port_0), 0);
-    ASSERT_EQ(steps[2].port(test_port_0), 0);
-    ASSERT_EQ(steps[3].port(test_port_0), 1);
-    ASSERT_EQ(steps[4].port(test_port_0), 0);
-    ASSERT_EQ(steps[5].port(test_port_0), 0);
-    ASSERT_EQ(steps[6].port(test_port_0), 1);
-    ASSERT_EQ(steps[7].port(test_port_0), 0);
+    ASSERT_EQ(std::get<bool>(steps[0].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[1].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[2].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[3].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[4].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[5].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[6].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[7].port(test_port_0)), false);
 }
 
 TEST(TraceBuilder, ShouldFailToAddSignalWhenNoPortIsSelected) {
@@ -86,14 +86,14 @@ TEST(TraceBuilder, ShouldAddMultipleSignalsToPort) {
 
     const std::vector<Step>& steps = trace.getSteps();
     ASSERT_EQ(steps.size(), 8);
-    ASSERT_EQ(steps[0].port(test_port_0), 1);
-    ASSERT_EQ(steps[1].port(test_port_0), 0);
-    ASSERT_EQ(steps[2].port(test_port_0), 1);
-    ASSERT_EQ(steps[3].port(test_port_0), 1);
-    ASSERT_EQ(steps[4].port(test_port_0), 0);
-    ASSERT_EQ(steps[5].port(test_port_0), 1);
-    ASSERT_EQ(steps[6].port(test_port_0), 1);
-    ASSERT_EQ(steps[7].port(test_port_0), 1);
+    ASSERT_EQ(std::get<bool>(steps[0].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[1].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[2].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[3].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[4].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[5].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[6].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[7].port(test_port_0)), true);
 }
 
 TEST(TraceBuilder, ShouldAddSignalsToMultiplePorts) {
@@ -105,14 +105,14 @@ TEST(TraceBuilder, ShouldAddSignalsToMultiplePorts) {
     
     const std::vector<Step>& steps = trace.getSteps();
     ASSERT_EQ(steps.size(), 2);
-    ASSERT_EQ(steps[0].port(test_port_0), 0);
-    ASSERT_EQ(steps[1].port(test_port_0), 0);
-    ASSERT_EQ(steps[0].port(test_port_1), 0);
-    ASSERT_EQ(steps[1].port(test_port_1), 1);
-    ASSERT_EQ(steps[0].port(test_port_2), 1);
-    ASSERT_EQ(steps[1].port(test_port_2), 0);
-    ASSERT_EQ(steps[0].port(test_port_3), 1);
-    ASSERT_EQ(steps[1].port(test_port_3), 1);
+    ASSERT_EQ(std::get<bool>(steps[0].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[1].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[0].port(test_port_1)), false);
+    ASSERT_EQ(std::get<bool>(steps[1].port(test_port_1)), true);
+    ASSERT_EQ(std::get<bool>(steps[0].port(test_port_2)), true);
+    ASSERT_EQ(std::get<bool>(steps[1].port(test_port_2)), false);
+    ASSERT_EQ(std::get<bool>(steps[0].port(test_port_3)), true);
+    ASSERT_EQ(std::get<bool>(steps[1].port(test_port_3)), true);
 }
 
 TEST(TraceBuilder, ShouldFailToGenerateTraceWhenPortsHaveSignalsWithDifferentLengths) {
@@ -129,14 +129,14 @@ TEST(TraceBuilder, ShouldRepeatSignal) {
 
     const std::vector<Step>& steps = trace.getSteps();
     ASSERT_EQ(steps.size(), 8);
-    ASSERT_EQ(steps[0].port(test_port_0), 1);
-    ASSERT_EQ(steps[1].port(test_port_0), 0);
-    ASSERT_EQ(steps[2].port(test_port_0), 1);
-    ASSERT_EQ(steps[3].port(test_port_0), 0);
-    ASSERT_EQ(steps[4].port(test_port_0), 1);
-    ASSERT_EQ(steps[5].port(test_port_0), 0);
-    ASSERT_EQ(steps[6].port(test_port_0), 1);
-    ASSERT_EQ(steps[7].port(test_port_0), 0);
+    ASSERT_EQ(std::get<bool>(steps[0].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[1].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[2].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[3].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[4].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[5].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[6].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[7].port(test_port_0)), false);
 }
 
 TEST(TraceBuilder, ShouldRepeatEachStepOfSignal) {
@@ -145,14 +145,14 @@ TEST(TraceBuilder, ShouldRepeatEachStepOfSignal) {
 
     const std::vector<Step>& steps = trace.getSteps();
     ASSERT_EQ(steps.size(), 8);
-    ASSERT_EQ(steps[0].port(test_port_0), 1);
-    ASSERT_EQ(steps[1].port(test_port_0), 1);
-    ASSERT_EQ(steps[2].port(test_port_0), 1);
-    ASSERT_EQ(steps[3].port(test_port_0), 1);
-    ASSERT_EQ(steps[4].port(test_port_0), 0);
-    ASSERT_EQ(steps[5].port(test_port_0), 0);
-    ASSERT_EQ(steps[6].port(test_port_0), 0);
-    ASSERT_EQ(steps[7].port(test_port_0), 0);
+    ASSERT_EQ(std::get<bool>(steps[0].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[1].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[2].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[3].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[4].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[5].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[6].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[7].port(test_port_0)), false);
 }
 
 TEST(TraceBuilder, ShouldModifyPortsIndependently) {
@@ -162,14 +162,14 @@ TEST(TraceBuilder, ShouldModifyPortsIndependently) {
     
     const std::vector<Step>& steps = trace.getSteps();
     ASSERT_EQ(steps.size(), 4);
-    ASSERT_EQ(steps[0].port(test_port_0), 1);
-    ASSERT_EQ(steps[1].port(test_port_0), 1);
-    ASSERT_EQ(steps[2].port(test_port_0), 0);
-    ASSERT_EQ(steps[3].port(test_port_0), 0);
-    ASSERT_EQ(steps[0].port(test_port_1), 1);
-    ASSERT_EQ(steps[1].port(test_port_1), 0);
-    ASSERT_EQ(steps[2].port(test_port_1), 1);
-    ASSERT_EQ(steps[3].port(test_port_1), 0);
+    ASSERT_EQ(std::get<bool>(steps[0].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[1].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[2].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[3].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[0].port(test_port_1)), true);
+    ASSERT_EQ(std::get<bool>(steps[1].port(test_port_1)), false);
+    ASSERT_EQ(std::get<bool>(steps[2].port(test_port_1)), true);
+    ASSERT_EQ(std::get<bool>(steps[3].port(test_port_1)), false);
 
 }
 
@@ -181,14 +181,14 @@ TEST(TraceBuilder, ShouldRepeatForAllPorts) {
     
     const std::vector<Step>& steps = trace.getSteps();
     ASSERT_EQ(steps.size(), 4);
-    ASSERT_EQ(steps[0].port(test_port_0), 1);
-    ASSERT_EQ(steps[1].port(test_port_0), 0);
-    ASSERT_EQ(steps[2].port(test_port_0), 1);
-    ASSERT_EQ(steps[3].port(test_port_0), 0);
-    ASSERT_EQ(steps[0].port(test_port_1), 0);
-    ASSERT_EQ(steps[1].port(test_port_1), 1);
-    ASSERT_EQ(steps[2].port(test_port_1), 0);
-    ASSERT_EQ(steps[3].port(test_port_1), 1);
+    ASSERT_EQ(std::get<bool>(steps[0].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[1].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[2].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[3].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[0].port(test_port_1)), false);
+    ASSERT_EQ(std::get<bool>(steps[1].port(test_port_1)), true);
+    ASSERT_EQ(std::get<bool>(steps[2].port(test_port_1)), false);
+    ASSERT_EQ(std::get<bool>(steps[3].port(test_port_1)), true);
 }
 
 TEST(TraeBuilder, ShouldRepeatEachStepForAllPorts) {
@@ -199,12 +199,12 @@ TEST(TraeBuilder, ShouldRepeatEachStepForAllPorts) {
     
     const std::vector<Step>& steps = trace.getSteps();
     ASSERT_EQ(steps.size(), 4);
-    ASSERT_EQ(steps[0].port(test_port_0), 1);
-    ASSERT_EQ(steps[1].port(test_port_0), 1);
-    ASSERT_EQ(steps[2].port(test_port_0), 0);
-    ASSERT_EQ(steps[3].port(test_port_0), 0);
-    ASSERT_EQ(steps[0].port(test_port_1), 0);
-    ASSERT_EQ(steps[1].port(test_port_1), 0);
-    ASSERT_EQ(steps[2].port(test_port_1), 1);
-    ASSERT_EQ(steps[3].port(test_port_1), 1);
+    ASSERT_EQ(std::get<bool>(steps[0].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[1].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[2].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[3].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[0].port(test_port_1)), false);
+    ASSERT_EQ(std::get<bool>(steps[1].port(test_port_1)), false);
+    ASSERT_EQ(std::get<bool>(steps[2].port(test_port_1)), true);
+    ASSERT_EQ(std::get<bool>(steps[3].port(test_port_1)), true);
 }

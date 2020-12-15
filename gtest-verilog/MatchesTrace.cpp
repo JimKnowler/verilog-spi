@@ -30,8 +30,8 @@ namespace matches_trace {
             const PortDescription& portDesc = actual.getPortDescription(portId);
             
             for (size_t step=0; step < sizeActual; step++) {
-                const bool valueActual = stepsActual[step].port(portDesc);
-                const bool valueExpected = stepsExpected[step].port(portDesc);
+                const bool valueActual = std::get<bool>(stepsActual[step].port(portDesc));
+                const bool valueExpected = std::get<bool>(stepsExpected[step].port(portDesc));
 
                 if (valueActual != valueExpected) {
                     if (listener.IsInterested()) {

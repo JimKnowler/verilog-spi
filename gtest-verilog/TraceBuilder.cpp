@@ -26,7 +26,7 @@ TraceBuilder::operator Trace() const {
         }
 
         size_t index = 0;
-        for (bool value : port->stepValues) {
+        for (const PortValue& value : port->stepValues) {
             Step& step = steps[index];
             
             step.port(port->portDesc) = value;
@@ -108,8 +108,8 @@ TraceBuilder& TraceBuilder::allPorts() {
     return *this;
 }
 
-void TraceBuilder::repeat(std::vector<bool>& stepValues, size_t repetitions) {
-    std::vector<bool> newStepValues;
+void TraceBuilder::repeat(std::vector<PortValue>& stepValues, size_t repetitions) {
+    std::vector<PortValue> newStepValues;
 
     for (size_t i=0; i<repetitions; i++) {
         newStepValues.insert(newStepValues.end(), stepValues.begin(), stepValues.end());
@@ -118,12 +118,12 @@ void TraceBuilder::repeat(std::vector<bool>& stepValues, size_t repetitions) {
     stepValues = newStepValues;
 }
 
-void TraceBuilder::repeatEachStep(std::vector<bool>& stepValues, size_t repetitions) {
-    std::vector<bool> newStepValues;
+void TraceBuilder::repeatEachStep(std::vector<PortValue>& stepValues, size_t repetitions) {
+    std::vector<PortValue> newStepValues;
 
-    for (bool bit : stepValues ) {
+    for (const PortValue& value : stepValues ) {
         for (size_t i=0; i<repetitions; i++) {
-            newStepValues.push_back(bit);
+            newStepValues.push_back(value);
         }
     }
 

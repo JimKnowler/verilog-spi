@@ -51,8 +51,8 @@ TEST(Trace, ShouldGetPortMaskForEmptyTrace) {
 
 TEST(Trace, ShouldGetPortMaskForNonEmptyTrace) {
     Step step;
-    step.port(test_port_0) = 1;
-    step.port(test_port_3) = 0;
+    step.port(test_port_0) = true;
+    step.port(test_port_3) = false;
 
     Trace trace;
     trace.append(step);
@@ -64,8 +64,8 @@ TEST(Trace, ShouldGetPortMaskForNonEmptyTrace) {
 
 TEST(Trace, ShouldGetPortDescription) {
     Step step;
-    step.port(test_port_0) = 1;
-    step.port(test_port_3) = 0;
+    step.port(test_port_0) = true;
+    step.port(test_port_3) = false;
 
     Trace trace;
     trace.append(step);
@@ -76,8 +76,8 @@ TEST(Trace, ShouldGetPortDescription) {
 
 TEST(Trace, ShouldFailToGetPortDescriptionForUnknownPort) {
     Step step;
-    step.port(test_port_0) = 1;
-    step.port(test_port_3) = 0;
+    step.port(test_port_0) = true;
+    step.port(test_port_3) = false;
 
     Trace trace;
     trace.append(step);
@@ -96,8 +96,3 @@ TEST(Trace, ShouldFailToGetPortDescriptionForEmptyTrace) {
     ASSERT_ANY_THROW(trace.getPortDescription(3)); 
     ASSERT_ANY_THROW(trace.getPortDescription(4));
 }
-
-
-// todo:
-// - print to TTY
-// - generate/configure ports from Verilator module - python script?

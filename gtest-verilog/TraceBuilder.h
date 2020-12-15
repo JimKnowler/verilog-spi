@@ -38,13 +38,12 @@ private:
 
         const PortDescription& portDesc;
 
-        // todo: support bit (bool) and multibit (byte/word) values
-        std::vector<bool> stepValues;
+        std::vector<PortValue> stepValues;
     };
 
     std::shared_ptr<Port> currentPort;
     std::vector<std::shared_ptr<Port>> ports;
 
-    void repeat(std::vector<bool>& stepValues, size_t repetitions);
-    void repeatEachStep(std::vector<bool>& stepValues, size_t repetitions);
+    void repeat(std::vector<PortValue>& stepValues, size_t repetitions);
+    void repeatEachStep(std::vector<PortValue>& stepValues, size_t repetitions);
 };

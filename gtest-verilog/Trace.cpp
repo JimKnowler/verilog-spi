@@ -67,7 +67,7 @@ void Trace::renderPort(std::ostream& os, size_t maxPortLabelSize, const PortDesc
 
     
     for (auto& step : steps) {
-        os << (step.port(portDesc) ? "-" : "_");
+        os << (std::get<bool>(step.port(portDesc)) ? "-" : "_");
     }
 
     os << ConsoleColour().reset();
