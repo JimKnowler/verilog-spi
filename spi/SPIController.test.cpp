@@ -32,10 +32,10 @@ TEST_F(SPIController, ShouldReportReadyToTransmit) {
 TEST_F(SPIController, ShouldIdleSpiClockWhileIdle) {
     testBench.tick(50);
 
-    Trace expected = TraceBuilder()
+    const Trace expectedTrace = TraceBuilder()
         .port(o_spi_clk).signal("00").repeat(50);
 
-    EXPECT_THAT(testBench.trace, MatchesTrace(expected));
+    EXPECT_THAT(testBench.trace, MatchesTrace(expectedTrace));
 }
 
 TEST_F(SPIController, ShouldSendByte0xFF) { 
@@ -57,7 +57,7 @@ TEST_F(SPIController, ShouldSendByte0xFF) {
     core.i_tx_byte = 0;
     testBench.tick(8 * 2);
     
-    Trace expectedTrace = TraceBuilder()
+    const Trace expectedTrace = TraceBuilder()
         .port(i_clk).signal(      "1010" )
         .port(o_tx_ready).signal( "0000" )      // should be 0 while sending
         .port(o_spi_clk).signal(  "1100" )      // should be pulsed every other tick while sending
@@ -88,7 +88,7 @@ TEST_F(SPIController, ShouldSendByte0xAA) {
     core.i_tx_byte = 0;
     testBench.tick(8 * 2);
     
-    Trace expectedTrace = TraceBuilder()
+    const Trace expectedTrace = TraceBuilder()
         .port(i_clk).signal(      "10101010" )
         .port(o_tx_ready).signal( "00000000" )      // should be 0 while sending
         .port(o_spi_clk).signal(  "11001100" )      // should be pulsed every other tick while sending
@@ -120,7 +120,7 @@ TEST_F(SPIController, ShouldSendByte0x55) {
     core.i_tx_byte = 0;
     testBench.tick(8 * 2);
     
-    Trace expectedTrace = TraceBuilder()
+    const Trace expectedTrace = TraceBuilder()
         .port(i_clk).signal(      "10101010" )
         .port(o_tx_ready).signal( "00000000" )      // should be 0 while sending
         .port(o_spi_clk).signal(  "11001100" )      // should be pulsed every other tick while sending
