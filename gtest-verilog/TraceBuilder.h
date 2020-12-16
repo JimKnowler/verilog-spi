@@ -19,6 +19,9 @@ public:
     // append a signal to the current port
     TraceBuilder& signal(const std::string& stepValues);
 
+    // append a signal to the current port
+    TraceBuilder& signal(const std::initializer_list<uint32_t>& stepValues);
+
     // repeat the stepValue pattern recorded so far for
     // the current port
     //   "abcd".repeat(2) => "abcdabcd" 

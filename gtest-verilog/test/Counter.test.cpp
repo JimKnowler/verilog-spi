@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
 using namespace testing;
 
+#include "gtest-verilog/TraceBuilder.h"
+#include "gtest-verilog/MatchesTrace.h"
+
 #include "Counter.gtest-verilog.h"
 using namespace counter;
 
@@ -23,7 +26,6 @@ TEST_F(Counter, ShouldConstruct) {
 TEST_F(Counter, ShouldReset) {
     testBench.reset();
 
-    // todo: use this to test Traces with multi-bit values
     ASSERT_EQ(testBench.core().o_value, 0);
 }
 
@@ -31,17 +33,22 @@ TEST_F(Counter, ShouldIncrement) {
     testBench.reset();
     testBench.tick();
 
-    // todo: use this to test Traces with multi-bit values
-    ASSERT_EQ(testBench.core().o_value, 1);
+    const Trace traceExpected = TraceBuilder()
+        .port(i_reset).signal( "10").repeatEachStep(2)
+        .port(i_clk).signal( "10" ).repeat(2)
+        .port(o_value).signal( {0, 1} ).repeatEachStep(2);
+
+    ASSERT_THAT(testBench.trace, MatchesTrace(traceExpected));
 }
 
 TEST_F(Counter, ShouldIncrementRepeatedly) {
     testBench.reset();
     testBench.tick(10);
 
-    // todo: use this to test Traces with multi-bit values
-    ASSERT_EQ(testBench.core().o_value, 10);
-}
+    const Trace traceExpected = TraceBuilder()
+        .port(i_reset).signal( "10000000000").repeatEachStep(2)
+        .port(i_clk).signal( "10" ).repeat(11)
+        .port(o_value).signal( {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10} ).repeatEachStep(2);
 
-// TODO: add tests that use TraceBuilder and MatchesTrace, so that those APIs are tested with
-//       cpp generated from verilog
+    ASSERT_THAT(testBench.trace, MatchesTrace(traceExpected));
+}

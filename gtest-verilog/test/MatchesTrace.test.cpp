@@ -9,6 +9,7 @@ namespace {
     PORT_DESCRIPTION(0, test_port_0, 1);
     PORT_DESCRIPTION(1, test_port_1, 1);
     PORT_DESCRIPTION(2, test_port_2, 1);
+    PORT_DESCRIPTION(3, test_port_3, 16);
 }
 
 TEST(MatchesTrace, ShouldMatchEmptyTraces) {
@@ -61,6 +62,33 @@ TEST(MatchesTrace, ShouldNotMatchOverlappingPortsWithSignalsOfDifferentLength) {
         .port(test_port_1).signal("101");
     Trace trace2 = TraceBuilder()
         .port(test_port_1).signal("10");
+    
+    EXPECT_THAT(trace1, Not(MatchesTrace(trace2)));
+}
+
+TEST(MatchesTrace, ShouldMatchOverlappingPortsWithMultibitSignals) {
+    Trace trace1 = TraceBuilder()
+        .port(test_port_3).signal( {0xffff, 0x1234, 0xabcd });
+    Trace trace2 = TraceBuilder()
+        .port(test_port_3).signal( {0xffff, 0x1234, 0xabcd } );
+    
+    EXPECT_THAT(trace1, MatchesTrace(trace2));
+}
+
+TEST(MatchesTrace, ShouldNotMatchOverlappingPortsWithDifferentMultibitSignals) {
+    Trace trace1 = TraceBuilder()
+        .port(test_port_3).signal( {0xffff, 0x1234, 0xabcd });
+    Trace trace2 = TraceBuilder()
+        .port(test_port_3).signal( {0xffff, 0x1234, 0xdcba } );
+    
+    EXPECT_THAT(trace1, Not(MatchesTrace(trace2)));
+}
+
+TEST(MatchesTrace, ShouldNotMatchOverlappingPortsWithMultibitSignalsOfDifferentLengths) {
+    Trace trace1 = TraceBuilder()
+        .port(test_port_3).signal( {0xffff, 0x1234, 0xabcd });
+    Trace trace2 = TraceBuilder()
+        .port(test_port_3).signal( {0xffff, 0x1234, 0xabcd, 0xef12 } );
     
     EXPECT_THAT(trace1, Not(MatchesTrace(trace2)));
 }

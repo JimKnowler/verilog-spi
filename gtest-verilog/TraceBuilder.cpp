@@ -78,6 +78,16 @@ TraceBuilder& TraceBuilder::signal(const std::string& stepValues) {
     return *this;
 }
 
+TraceBuilder& TraceBuilder::signal(const std::initializer_list<uint32_t>& stepValues) {
+    if (!currentPort) {
+        throw std::logic_error("unable to add signal without current port");
+    }
+
+    currentPort->stepValues.insert(currentPort->stepValues.end(), stepValues.begin(), stepValues.end());
+
+    return *this;
+}
+
 TraceBuilder& TraceBuilder::repeat(size_t repetitions) {
     if (currentPort) {
         repeat(currentPort->stepValues, repetitions);    

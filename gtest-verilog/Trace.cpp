@@ -52,7 +52,7 @@ static void renderTimeline(std::ostream& os, size_t x, size_t numSteps) {
     os << "\n";
 }
 
-void Trace::renderPort(std::ostream& os, size_t maxPortLabelSize, const PortDescription& portDesc, const std::vector<Step>& steps) {
+static void renderRowForPort(std::ostream& os, size_t maxPortLabelSize, const PortDescription& portDesc, const std::vector<Step>& steps, bool renderPortName, size_t nibbleIndex) {
     uint32_t portId = portDesc.id();
 
     ConsoleColour::Colour portColour = Trace::getColourForPortId(portId);
@@ -60,18 +60,43 @@ void Trace::renderPort(std::ostream& os, size_t maxPortLabelSize, const PortDesc
     os << ConsoleColour().fg(portColour);
 
     char buffer[64];
-    sprintf(buffer, "  %*s ", int(maxPortLabelSize), portDesc.label());
+    sprintf(buffer, "  %*s ", int(maxPortLabelSize), renderPortName ? portDesc.label() : "");
     os << buffer;
 
     os << ConsoleColour().fg(ConsoleColour::kBlack).bg(portColour);
 
     
-    for (auto& step : steps) {
-        os << (std::get<bool>(step.port(portDesc)) ? "-" : "_");
+    if (portDesc.width() == 1) {
+        for (auto& step : steps) {
+            os << (std::get<bool>(step.port(portDesc)) ? "-" : "_");
+        }
+    } else  {
+
+        for (size_t i=0; i<steps.size(); i++) {
+            uint32_t value = std::get<uint32_t>(steps[i].port(portDesc));
+            sprintf(buffer, "%X", uint8_t( (value >> (nibbleIndex*4)) & 0xf));                // todo: render each nibble separately
+            buffer[1] = 0;      // limit to a single hex character
+
+            os << buffer;
+        }
     }
 
     os << ConsoleColour().reset();
     os << "\n";
+}
+
+
+void Trace::renderPort(std::ostream& os, size_t maxPortLabelSize, const PortDescription& portDesc, const std::vector<Step>& steps) {
+    if (portDesc.width() == 1) {
+        renderRowForPort(os, maxPortLabelSize, portDesc, steps, true, 0);
+    } else {
+        size_t numRows = size_t(ceil(portDesc.width() / 4.0f));
+
+        for (size_t rowIndex=0; rowIndex<numRows; rowIndex++) {
+            bool renderPortName = (rowIndex == 0);
+            renderRowForPort(os, maxPortLabelSize, portDesc, steps, renderPortName, rowIndex);
+        }
+    }
 }
 
 std::ostream& operator<<(std::ostream &os, const Trace& trace) {
@@ -159,3 +184,10 @@ void Trace::renderPortDiff(std::ostream& os, char diffCharacter, ConsoleColour::
 
     os << "\n";
 }
+
+// TODO
+// - handle rendering multibit values as hex with leading '<' and trailing '>'
+//   - handle situations where multibit value is not current long enough to render
+// - double length of each step in TTY, so that byte value can be displayed if held for a clock cycle
+// - configure length of each step in TTY, so that we can zoom in..
+// - handle traces that are too long for the screen
