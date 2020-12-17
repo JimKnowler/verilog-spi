@@ -63,19 +63,28 @@ static void renderRowForPort(std::ostream& os, size_t maxPortLabelSize, const Po
     sprintf(buffer, "  %*s ", int(maxPortLabelSize), renderPortName ? portDesc.label() : "");
     os << buffer;
 
-    os << ConsoleColour().fg(ConsoleColour::kBlack).bg(portColour);
+    os << ConsoleColour().reset();
+    if (portDesc.width() > 1) {
+        sprintf(buffer, "[%02lu:%02lu] ", ((nibbleIndex + 1) * 4) - 1, (nibbleIndex * 4));
+        os << buffer;
+    } else {
+        os << "....... ";
+    }
 
+    os << ConsoleColour().fg(ConsoleColour::kBlack).bg(portColour);
     
     if (portDesc.width() == 1) {
         for (auto& step : steps) {
             os << (std::get<bool>(step.port(portDesc)) ? "-" : "_");
         }
     } else  {
-
         for (size_t i=0; i<steps.size(); i++) {
             uint32_t value = std::get<uint32_t>(steps[i].port(portDesc));
-            sprintf(buffer, "%X", uint8_t( (value >> (nibbleIndex*4)) & 0xf));                // todo: render each nibble separately
-            buffer[1] = 0;      // limit to a single hex character
+            uint8_t nibble = uint8_t( (value >> (nibbleIndex * 4)) & 0xf);
+            sprintf(buffer, "%X", nibble);
+            
+            // use null terminator to force limit to a single hex character
+            buffer[1] = 0;
 
             os << buffer;
         }
@@ -85,16 +94,17 @@ static void renderRowForPort(std::ostream& os, size_t maxPortLabelSize, const Po
     os << "\n";
 }
 
-
 void Trace::renderPort(std::ostream& os, size_t maxPortLabelSize, const PortDescription& portDesc, const std::vector<Step>& steps) {
     if (portDesc.width() == 1) {
         renderRowForPort(os, maxPortLabelSize, portDesc, steps, true, 0);
     } else {
         size_t numRows = size_t(ceil(portDesc.width() / 4.0f));
 
-        for (size_t rowIndex=0; rowIndex<numRows; rowIndex++) {
-            bool renderPortName = (rowIndex == 0);
-            renderRowForPort(os, maxPortLabelSize, portDesc, steps, renderPortName, rowIndex);
+        for (size_t displayRowIndex=0; displayRowIndex<numRows; displayRowIndex++) {
+            bool renderPortName = (displayRowIndex == 0);
+
+            size_t inverseRowIndex = numRows - displayRowIndex - 1;
+            renderRowForPort(os, maxPortLabelSize, portDesc, steps, renderPortName, inverseRowIndex);
         }
     }
 }
@@ -107,11 +117,7 @@ std::ostream& operator<<(std::ostream &os, const Trace& trace) {
     
     size_t maxPortLabelSize = trace.getMaxPortLabelSize();
 
-    // limit maximum port label size for our 64 byte buffer
-    // note: -4 = 1 (null terminator) + 3 (padding spaces used in printf for right-justified port label)
-    maxPortLabelSize = std::min(maxPortLabelSize, size_t(64 - 4));
-
-    renderTimeline(os, maxPortLabelSize + 3, steps.size());
+    renderTimeline(os, maxPortLabelSize + 11, steps.size());
 
     for (uint32_t portId=0; portId<32; portId++) {
         if (!trace.hasPort(portId)) {
@@ -143,7 +149,9 @@ const PortDescription& Trace::getPortDescription(uint32_t portId) const {
 }
 
 size_t Trace::getMaxPortLabelSize() const {
-    size_t maxPortLabelSize = 10;
+    const size_t kMinPortLabelSize = 10;
+
+    size_t maxPortLabelSize = kMinPortLabelSize;
     
     for (uint32_t portId=0; portId<32; portId++) {
         if (!hasPort(portId)) {
@@ -154,6 +162,10 @@ size_t Trace::getMaxPortLabelSize() const {
         const size_t labelSize = strlen(portDesc.label());
         maxPortLabelSize = std::max(labelSize, maxPortLabelSize);
     }
+
+    // limit maximum port label size for our 64 byte buffer
+    // note: -12 = 1 (null terminator) + 7 (space for [hi:lo]) + 4 (padding spaces used in printf for right-justified port label)
+    maxPortLabelSize = std::min(maxPortLabelSize, size_t(64 - 10));
 
     return maxPortLabelSize;
 }
@@ -166,7 +178,7 @@ void Trace::renderPortDiff(std::ostream& os, char diffCharacter, ConsoleColour::
         }
     }
 
-    const size_t traceStartX = maxPortLabelSize + 3;        // note: '+3' as used in renderPort()
+    const size_t traceStartX = maxPortLabelSize + 11;        // note: adding spacing to match spacing used in renderPort()
     for (size_t i=0; i<traceStartX; i++) {
         os << " ";
     }
