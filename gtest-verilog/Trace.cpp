@@ -74,19 +74,40 @@ static void renderRowForPort(std::ostream& os, size_t maxPortLabelSize, const Po
     os << ConsoleColour().fg(ConsoleColour::kBlack).bg(portColour);
     
     if (portDesc.width() == 1) {
+        // single-bit port
         for (auto& step : steps) {
             os << (std::get<bool>(step.port(portDesc)) ? "-" : "_");
         }
     } else  {
-        for (size_t i=0; i<steps.size(); i++) {
-            uint32_t value = std::get<uint32_t>(steps[i].port(portDesc));
+        // multi-bit port
+        size_t stepIndex = 0;
+        while (stepIndex < steps.size()) {
+            uint32_t value = std::get<uint32_t>(steps[stepIndex].port(portDesc));
+
+            size_t runLength = 1;
+            stepIndex += 1;
+
+            while ((stepIndex < steps.size()) && (value == std::get<uint32_t>(steps[stepIndex].port(portDesc)))) {
+                runLength += 1;
+                stepIndex += 1;
+            }
+
             uint8_t nibble = uint8_t( (value >> (nibbleIndex * 4)) & 0xf);
             sprintf(buffer, "%X", nibble);
-            
             // use null terminator to force limit to a single hex character
             buffer[1] = 0;
-
-            os << buffer;
+            
+            if (runLength == 1) {
+                os << "<";
+            } else if (runLength == 2) {
+                os << "<" << buffer;
+            } else {
+                os << "<" << buffer;
+                for (size_t i = 3; i<runLength; i++) {
+                    os << ".";
+                }
+                os << ">";
+            }
         }
     }
 
