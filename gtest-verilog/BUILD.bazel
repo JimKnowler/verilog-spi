@@ -1,3 +1,5 @@
+load("@rules_verilator//verilator:defs.bzl", "verilator_cc_library")
+
 cc_library(
     name = "lib",
     srcs = glob([
@@ -10,4 +12,38 @@ cc_library(
         "@com_google_googletest//:gtest",
     ],
     visibility = ["//visibility:public"]
+)
+
+cc_test(
+    name = "test",
+    srcs = glob(
+        include =[
+            "test/*.cpp",
+            "test/*.h"
+        ]
+    ),
+    deps = [
+        "@com_google_googletest//:gtest",
+        "//gtest-verilog:lib"
+    ],
+)
+
+verilator_cc_library(
+    name = "Counter",
+    srcs = ["example/Counter.v"],
+)
+
+cc_test(
+    name = "example",
+    srcs = glob(
+        include = [
+            "example/*.cpp",
+            "example/*.h"
+        ]
+    ),
+    deps = [
+        "@com_google_googletest//:gtest",
+        "//gtest-verilog:lib",
+        ":Counter"
+    ]
 )
