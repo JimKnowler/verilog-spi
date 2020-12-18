@@ -62,6 +62,10 @@ TraceBuilder& TraceBuilder::signal(const std::string& stepValues) {
         throw std::logic_error("unable to add signal without current port");
     }
 
+    if (stepValues.empty()) {
+        throw std::logic_error("unable to add zero-length signal");
+    }
+
     concat();
 
     for (char c : stepValues) {
@@ -88,6 +92,10 @@ TraceBuilder& TraceBuilder::signal(const std::string& stepValues) {
 TraceBuilder& TraceBuilder::signal(const std::initializer_list<uint32_t>& stepValues) {
     if (!currentPort) {
         throw std::logic_error("unable to add signal without current port");
+    }
+
+    if (stepValues.size() == 0) {
+        throw std::logic_error("unable to add zero-length signal");
     }
 
     concat();

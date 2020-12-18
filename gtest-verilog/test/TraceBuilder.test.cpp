@@ -266,3 +266,17 @@ TEST(TraceBuilder, ShouldConcatenateMultipleSignalsOnSinglePort) {
     ASSERT_EQ(std::get<bool>(steps[6].port(test_port_0)), true);
     ASSERT_EQ(std::get<bool>(steps[7].port(test_port_0)), false);
 }
+
+TEST(TraceBuilder, ShouldFailToAddEmptyStringSignal) {
+    ASSERT_ANY_THROW(
+        TraceBuilder()
+             .port(test_port_0).signal("")
+    );
+}
+
+TEST(TraceBuilder, ShouldFailToAddEmptyPortValueSignal) {
+    ASSERT_ANY_THROW(
+        TraceBuilder()
+             .port(test_port_0).signal({})
+    );
+}
