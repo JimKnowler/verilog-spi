@@ -6,6 +6,7 @@ using namespace testing;
 
 #include "gtest-verilog/MatchesTrace.h"
 #include "gtest-verilog/TraceBuilder.h"
+using namespace testing_verilog;
 
 #include "SPIController.gtest-verilog.h"
 using namespace spi_controller;

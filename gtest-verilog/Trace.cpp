@@ -2,225 +2,225 @@
 
 #include <string.h>
 
-Trace::Trace() {
-}
+namespace testing_verilog {
+    Trace::Trace() {
+    }
 
-const std::vector<Step>& Trace::getSteps() const {
-    return steps;
-}
+    const std::vector<Step>& Trace::getSteps() const {
+        return steps;
+    }
 
-void Trace::clear() {
-    steps.clear();
-}
+    void Trace::clear() {
+        steps.clear();
+    }
 
-void Trace::append(const Step& step) {
-    if (!steps.empty()) {
-        if (steps[0].getPortMask() != step.getPortMask()) {
-            throw std::logic_error("steps should have matching ports");
+    void Trace::append(const Step& step) {
+        if (!steps.empty()) {
+            if (steps[0].getPortMask() != step.getPortMask()) {
+                throw std::logic_error("steps should have matching ports");
+            }
+        }
+        steps.push_back(step);
+    }
+
+    const uint32_t Trace::getPortMask() const {
+        if (steps.empty()) {
+            return 0;
+        } else {
+            return steps[0].getPortMask();
         }
     }
-    steps.push_back(step);
-}
 
-const uint32_t Trace::getPortMask() const {
-    if (steps.empty()) {
-        return 0;
-    } else {
-        return steps[0].getPortMask();
-    }
-}
-
-bool Trace::hasPort(uint32_t portId) const {
-    return 0 != (getPortMask() & (1 << portId));
-}
-
-static void renderTimeline(std::ostream& os, size_t x, size_t numSteps) {
-    char buffer[64];
-
-    sprintf(buffer, "%*s", int(x), " ");
-    os << buffer;
-
-    const int kDividerSize = 5;
-    int numDividers = (numSteps + kDividerSize - 1) / kDividerSize;
-
-    for (int i=0; i<numDividers;i++) {
-        char divider[8];
-        sprintf(divider, "|%-*d", kDividerSize-1, i * kDividerSize);
-        os << divider;
+    bool Trace::hasPort(uint32_t portId) const {
+        return 0 != (getPortMask() & (1 << portId));
     }
 
-    os << "\n";
-}
+    static void renderTimeline(std::ostream& os, size_t x, size_t numSteps) {
+        char buffer[64];
 
-static void renderRowForPort(std::ostream& os, size_t maxPortLabelSize, const PortDescription& portDesc, const std::vector<Step>& steps, bool renderPortName, size_t nibbleIndex) {
-    uint32_t portId = portDesc.id();
-
-    ConsoleColour::Colour portColour = Trace::getColourForPortId(portId);
-
-    os << ConsoleColour().fg(portColour);
-
-    char buffer[64];
-    sprintf(buffer, "  %*s ", int(maxPortLabelSize), renderPortName ? portDesc.label() : "");
-    os << buffer;
-
-    os << ConsoleColour().reset();
-    if (portDesc.width() > 1) {
-        sprintf(buffer, "[%02lu:%02lu] ", ((nibbleIndex + 1) * 4) - 1, (nibbleIndex * 4));
+        sprintf(buffer, "%*s", int(x), " ");
         os << buffer;
-    } else {
-        os << "....... ";
+
+        const int kDividerSize = 5;
+        int numDividers = (numSteps + kDividerSize - 1) / kDividerSize;
+
+        for (int i=0; i<numDividers;i++) {
+            char divider[8];
+            sprintf(divider, "|%-*d", kDividerSize-1, i * kDividerSize);
+            os << divider;
+        }
+
+        os << "\n";
     }
 
-    os << ConsoleColour().fg(ConsoleColour::kBlack).bg(portColour);
-    
-    if (portDesc.width() == 1) {
-        // single-bit port
-        for (auto& step : steps) {
-            os << (std::get<bool>(step.port(portDesc)) ? "-" : "_");
+    static void renderRowForPort(std::ostream& os, size_t maxPortLabelSize, const PortDescription& portDesc, const std::vector<Step>& steps, bool renderPortName, size_t nibbleIndex) {
+        uint32_t portId = portDesc.id();
+
+        ConsoleColour::Colour portColour = Trace::getColourForPortId(portId);
+
+        os << ConsoleColour().fg(portColour);
+
+        char buffer[64];
+        sprintf(buffer, "  %*s ", int(maxPortLabelSize), renderPortName ? portDesc.label() : "");
+        os << buffer;
+
+        os << ConsoleColour().reset();
+        if (portDesc.width() > 1) {
+            sprintf(buffer, "[%02lu:%02lu] ", ((nibbleIndex + 1) * 4) - 1, (nibbleIndex * 4));
+            os << buffer;
+        } else {
+            os << "....... ";
         }
-    } else  {
-        // multi-bit port
-        size_t stepIndex = 0;
-        while (stepIndex < steps.size()) {
-            uint32_t value = std::get<uint32_t>(steps[stepIndex].port(portDesc));
 
-            size_t runLength = 1;
-            stepIndex += 1;
+        os << ConsoleColour().fg(ConsoleColour::kBlack).bg(portColour);
+        
+        if (portDesc.width() == 1) {
+            // single-bit port
+            for (auto& step : steps) {
+                os << (std::get<bool>(step.port(portDesc)) ? "-" : "_");
+            }
+        } else  {
+            // multi-bit port
+            size_t stepIndex = 0;
+            while (stepIndex < steps.size()) {
+                uint32_t value = std::get<uint32_t>(steps[stepIndex].port(portDesc));
 
-            while ((stepIndex < steps.size()) && (value == std::get<uint32_t>(steps[stepIndex].port(portDesc)))) {
-                runLength += 1;
+                size_t runLength = 1;
                 stepIndex += 1;
-            }
 
-            uint8_t nibble = uint8_t( (value >> (nibbleIndex * 4)) & 0xf);
-            sprintf(buffer, "%X", nibble);
-            // use null terminator to force limit to a single hex character
-            buffer[1] = 0;
-            
-            if (runLength == 1) {
-                os << "<";
-            } else if (runLength == 2) {
-                os << "<" << buffer;
-            } else {
-                os << "<" << buffer;
-                for (size_t i = 3; i<runLength; i++) {
-                    os << ".";
+                while ((stepIndex < steps.size()) && (value == std::get<uint32_t>(steps[stepIndex].port(portDesc)))) {
+                    runLength += 1;
+                    stepIndex += 1;
                 }
-                os << ">";
+
+                uint8_t nibble = uint8_t( (value >> (nibbleIndex * 4)) & 0xf);
+                sprintf(buffer, "%X", nibble);
+                // use null terminator to force limit to a single hex character
+                buffer[1] = 0;
+                
+                if (runLength == 1) {
+                    os << "<";
+                } else if (runLength == 2) {
+                    os << "<" << buffer;
+                } else {
+                    os << "<" << buffer;
+                    for (size_t i = 3; i<runLength; i++) {
+                        os << ".";
+                    }
+                    os << ">";
+                }
+            }
+        }
+
+        os << ConsoleColour().reset();
+        os << "\n";
+    }
+
+    void Trace::renderPort(std::ostream& os, size_t maxPortLabelSize, const PortDescription& portDesc, const std::vector<Step>& steps) {
+        if (portDesc.width() == 1) {
+            renderRowForPort(os, maxPortLabelSize, portDesc, steps, true, 0);
+        } else {
+            size_t numRows = size_t(ceil(portDesc.width() / 4.0f));
+
+            for (size_t displayRowIndex=0; displayRowIndex<numRows; displayRowIndex++) {
+                bool renderPortName = (displayRowIndex == 0);
+
+                size_t inverseRowIndex = numRows - displayRowIndex - 1;
+                renderRowForPort(os, maxPortLabelSize, portDesc, steps, renderPortName, inverseRowIndex);
             }
         }
     }
 
-    os << ConsoleColour().reset();
-    os << "\n";
-}
+    std::ostream& operator<<(std::ostream &os, const Trace& trace) {
+        os << "\n";
+        os << ConsoleColour().reset();
 
-void Trace::renderPort(std::ostream& os, size_t maxPortLabelSize, const PortDescription& portDesc, const std::vector<Step>& steps) {
-    if (portDesc.width() == 1) {
-        renderRowForPort(os, maxPortLabelSize, portDesc, steps, true, 0);
-    } else {
-        size_t numRows = size_t(ceil(portDesc.width() / 4.0f));
+        auto& steps = trace.getSteps();
+        
+        size_t maxPortLabelSize = trace.getMaxPortLabelSize();
 
-        for (size_t displayRowIndex=0; displayRowIndex<numRows; displayRowIndex++) {
-            bool renderPortName = (displayRowIndex == 0);
+        renderTimeline(os, maxPortLabelSize + 11, steps.size());
 
-            size_t inverseRowIndex = numRows - displayRowIndex - 1;
-            renderRowForPort(os, maxPortLabelSize, portDesc, steps, renderPortName, inverseRowIndex);
-        }
-    }
-}
+        for (uint32_t portId=0; portId<32; portId++) {
+            if (!trace.hasPort(portId)) {
+                continue;
+            }
 
-std::ostream& operator<<(std::ostream &os, const Trace& trace) {
-    os << "\n";
-    os << ConsoleColour().reset();
+            const PortDescription& portDesc = trace.getPortDescription(portId);
 
-    auto& steps = trace.getSteps();
-    
-    size_t maxPortLabelSize = trace.getMaxPortLabelSize();
-
-    renderTimeline(os, maxPortLabelSize + 11, steps.size());
-
-    for (uint32_t portId=0; portId<32; portId++) {
-        if (!trace.hasPort(portId)) {
-            continue;
+            Trace::renderPort(os, maxPortLabelSize, portDesc, steps);
         }
 
-        const PortDescription& portDesc = trace.getPortDescription(portId);
-
-        Trace::renderPort(os, maxPortLabelSize, portDesc, steps);
+        return os;
     }
 
-    return os;
-}
+    ConsoleColour::Colour Trace::getColourForPortId(uint32_t portId) {
+        ConsoleColour::Colour colour = ConsoleColour::Colour(1 + (portId % 7));
 
-ConsoleColour::Colour Trace::getColourForPortId(uint32_t portId) {
-    ConsoleColour::Colour colour = ConsoleColour::Colour(1 + (portId % 7));
-
-    return colour;
-}
-
-const PortDescription& Trace::getPortDescription(uint32_t portId) const {
-    if (steps.empty()) {
-        throw std::logic_error("unable to getPortDescription when trace is empty");
+        return colour;
     }
 
-    const Step& step = steps[0];
-    
-    return step.getPortDescription(portId);
-}
-
-size_t Trace::getMaxPortLabelSize() const {
-    const size_t kMinPortLabelSize = 10;
-
-    size_t maxPortLabelSize = kMinPortLabelSize;
-    
-    for (uint32_t portId=0; portId<32; portId++) {
-        if (!hasPort(portId)) {
-            continue;
+    const PortDescription& Trace::getPortDescription(uint32_t portId) const {
+        if (steps.empty()) {
+            throw std::logic_error("unable to getPortDescription when trace is empty");
         }
 
-        const PortDescription& portDesc = getPortDescription(portId);
-        const size_t labelSize = strlen(portDesc.label());
-        maxPortLabelSize = std::max(labelSize, maxPortLabelSize);
+        const Step& step = steps[0];
+        
+        return step.getPortDescription(portId);
     }
 
-    // limit maximum port label size for our 64 byte buffer
-    // note: -12 = 1 (null terminator) + 7 (space for [hi:lo]) + 4 (padding spaces used in printf for right-justified port label)
-    maxPortLabelSize = std::min(maxPortLabelSize, size_t(64 - 10));
+    size_t Trace::getMaxPortLabelSize() const {
+        const size_t kMinPortLabelSize = 10;
 
-    return maxPortLabelSize;
-}
+        size_t maxPortLabelSize = kMinPortLabelSize;
+        
+        for (uint32_t portId=0; portId<32; portId++) {
+            if (!hasPort(portId)) {
+                continue;
+            }
 
-void Trace::renderPortDiff(std::ostream& os, char diffCharacter, ConsoleColour::Colour diffColour, size_t maxPortLabelSize, const PortDescription& portDesc, const std::vector<Step>& stepsActual, const std::vector<Step>& stepsExpected) {
-    std::vector<size_t> diff;
-    for (size_t i = 0; i<stepsExpected.size(); i++) {
-        if (stepsExpected[i].port(portDesc) != stepsActual[i].port(portDesc)) {
-            diff.push_back(i);
+            const PortDescription& portDesc = getPortDescription(portId);
+            const size_t labelSize = strlen(portDesc.label());
+            maxPortLabelSize = std::max(labelSize, maxPortLabelSize);
         }
+
+        // limit maximum port label size for our 64 byte buffer
+        // note: -12 = 1 (null terminator) + 7 (space for [hi:lo]) + 4 (padding spaces used in printf for right-justified port label)
+        maxPortLabelSize = std::min(maxPortLabelSize, size_t(64 - 10));
+
+        return maxPortLabelSize;
     }
 
-    const size_t traceStartX = maxPortLabelSize + 11;        // note: adding spacing to match spacing used in renderPort()
-    for (size_t i=0; i<traceStartX; i++) {
-        os << " ";
-    }
+    void Trace::renderPortDiff(std::ostream& os, char diffCharacter, ConsoleColour::Colour diffColour, size_t maxPortLabelSize, const PortDescription& portDesc, const std::vector<Step>& stepsActual, const std::vector<Step>& stepsExpected) {
+        std::vector<size_t> diff;
+        for (size_t i = 0; i<stepsExpected.size(); i++) {
+            if (stepsExpected[i].port(portDesc) != stepsActual[i].port(portDesc)) {
+                diff.push_back(i);
+            }
+        }
 
-    size_t outputPos = 0;
-    for (size_t diffPos : diff) {
-        while (outputPos < diffPos) {
+        const size_t traceStartX = maxPortLabelSize + 11;        // note: adding spacing to match spacing used in renderPort()
+        for (size_t i=0; i<traceStartX; i++) {
             os << " ";
+        }
+
+        size_t outputPos = 0;
+        for (size_t diffPos : diff) {
+            while (outputPos < diffPos) {
+                os << " ";
+                outputPos += 1;
+            }
+
+            os << ConsoleColour().fg(diffColour) << diffCharacter << ConsoleColour().reset();
             outputPos += 1;
         }
 
-        os << ConsoleColour().fg(diffColour) << diffCharacter << ConsoleColour().reset();
-        outputPos += 1;
+        os << "\n";
     }
-
-    os << "\n";
 }
 
 // TODO
-// - handle rendering multibit values as hex with leading '<' and trailing '>'
-//   - handle situations where multibit value is not current long enough to render
 // - double length of each step in TTY, so that byte value can be displayed if held for a clock cycle
 // - configure length of each step in TTY, so that we can zoom in..
 // - handle traces that are too long for the screen

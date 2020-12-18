@@ -2,14 +2,17 @@
 
 #include "Trace.h"
 
-namespace matches_trace {
-    bool compare(const Trace& a, const Trace& b, ::testing::MatchResultListener& listener);
-}
+namespace testing_verilog {
 
-MATCHER_P(MatchesTrace, trace, "") {
-    if (!matches_trace::compare(arg, trace, *result_listener)) {
-        return false;
+    namespace matches_trace {
+        bool compare(const Trace& a, const Trace& b, ::testing::MatchResultListener& listener);
     }
 
-    return true;
+    MATCHER_P(MatchesTrace, trace, "") {
+        if (!matches_trace::compare(arg, trace, *result_listener)) {
+            return false;
+        }
+
+        return true;
+    }
 }

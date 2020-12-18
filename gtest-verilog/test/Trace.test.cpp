@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "gtest-verilog/Trace.h"
+using namespace testing_verilog;
 
 namespace {
     PORT_DESCRIPTION(0, test_port_0, 1);

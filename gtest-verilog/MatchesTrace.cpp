@@ -1,5 +1,6 @@
 #include "MatchesTrace.h"
 
+namespace testing_verilog {
 namespace matches_trace {
 
     bool compare(const Trace& actual, const Trace& expected, ::testing::MatchResultListener& listener) {
@@ -63,4 +64,6 @@ namespace matches_trace {
 
         return true;
     }
-}
+    
+} // matches_trace
+} // testing_verilog

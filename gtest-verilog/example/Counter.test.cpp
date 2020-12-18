@@ -3,6 +3,7 @@ using namespace testing;
 
 #include "gtest-verilog/TraceBuilder.h"
 #include "gtest-verilog/MatchesTrace.h"
+using namespace testing_verilog;
 
 #include "Counter.gtest-verilog.h"
 using namespace counter;

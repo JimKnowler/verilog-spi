@@ -1,5 +1,7 @@
 #include "SPIController.gtest-verilog.h"
 
+using namespace testing_verilog;
+
 /// @brief Expectation is that this would be generated from verilator output with python script
 
 namespace spi_controller {

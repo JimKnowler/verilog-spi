@@ -1,53 +1,56 @@
 #include "Step.h"
 
-Step::Step() {
-    portMask = 0;
-}
+namespace testing_verilog {
 
-size_t Step::getNumPorts() const {
-    return ports.size();
-}
-
-PortValue& Step::port(const PortDescription& portDesc) {
-    uint32_t portId = portDesc.id();
-
-    if (!hasPort(&portDesc)) {
-        if (getNumPorts() == 32) {
-            throw std::logic_error("unable to add more than 32 ports");
-        }
+    Step::Step() {
+        portMask = 0;
     }
 
-    PortValue& value = ports[&portDesc];
+    size_t Step::getNumPorts() const {
+        return ports.size();
+    }
 
-    portMask |= (1 << portId);
+    PortValue& Step::port(const PortDescription& portDesc) {
+        uint32_t portId = portDesc.id();
 
-    return value;
-}
+        if (!hasPort(&portDesc)) {
+            if (getNumPorts() == 32) {
+                throw std::logic_error("unable to add more than 32 ports");
+            }
+        }
 
-const PortValue& Step::port(const PortDescription& portDesc) const {
-    if (!hasPort(&portDesc)) {
+        PortValue& value = ports[&portDesc];
+
+        portMask |= (1 << portId);
+
+        return value;
+    }
+
+    const PortValue& Step::port(const PortDescription& portDesc) const {
+        if (!hasPort(&portDesc)) {
+            throw std::logic_error("unknown port");
+        }
+
+        auto it = ports.find(&portDesc);
+        
+        return it->second;
+    }
+
+    uint32_t Step::getPortMask() const {
+        return portMask;
+    }
+
+    bool Step::hasPort(const PortDescription* pPortDesc) const {
+        return ports.find(pPortDesc) != ports.end();
+    }
+
+    const PortDescription& Step::getPortDescription(uint32_t portId) const {
+        for (auto it = ports.begin(); it != ports.end(); it++) {
+            if (it->first->id() == portId) {
+                return *(it->first);
+            }
+        }
+
         throw std::logic_error("unknown port");
     }
-
-    auto it = ports.find(&portDesc);
-    
-    return it->second;
-}
-
-uint32_t Step::getPortMask() const {
-    return portMask;
-}
-
-bool Step::hasPort(const PortDescription* pPortDesc) const {
-    return ports.find(pPortDesc) != ports.end();
-}
-
-const PortDescription& Step::getPortDescription(uint32_t portId) const {
-    for (auto it = ports.begin(); it != ports.end(); it++) {
-        if (it->first->id() == portId) {
-            return *(it->first);
-        }
-    }
-
-    throw std::logic_error("unknown port");
 }

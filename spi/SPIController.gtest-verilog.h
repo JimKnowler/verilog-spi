@@ -8,16 +8,16 @@
 /// @brief Expectation is that this would be generated from verilator output with python script
 
 namespace spi_controller {
-    extern PortDescription i_clk;
-    extern PortDescription o_tx_ready;
-    extern PortDescription o_spi_clk;
-    extern PortDescription o_spi_copi;
+    extern ::testing_verilog::PortDescription i_clk;
+    extern ::testing_verilog::PortDescription o_tx_ready;
+    extern ::testing_verilog::PortDescription o_spi_clk;
+    extern ::testing_verilog::PortDescription o_spi_copi;
 
-    class TestBench : public ::TestBench<VSPIController> {
+    class TestBench : public ::testing_verilog::TestBench<VSPIController> {
     public:
         virtual void onNextStep() override;
 
-        Trace trace;
+        ::testing_verilog::Trace trace;
     };
 
 }
