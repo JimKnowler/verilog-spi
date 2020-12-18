@@ -250,3 +250,19 @@ TEST(TraceBuilder, ShouldIndependentlyModifyMultipleSignalsForMultiplePorts) {
     ASSERT_EQ(std::get<uint32_t>(steps[6].port(test_port_1)), 4);
     ASSERT_EQ(std::get<uint32_t>(steps[7].port(test_port_1)), 4);
 }
+
+TEST(TraceBuilder, ShouldConcatenateMultipleSignalsOnSinglePort) {
+    Trace trace = TraceBuilder()
+        .port(test_port_0).signal("0").signal("0").signal("10").concat().repeat(2);
+    
+    const std::vector<Step>& steps = trace.getSteps();
+    ASSERT_EQ(steps.size(), 8);
+    ASSERT_EQ(std::get<bool>(steps[0].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[1].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[2].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[3].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[4].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[5].port(test_port_0)), false);
+    ASSERT_EQ(std::get<bool>(steps[6].port(test_port_0)), true);
+    ASSERT_EQ(std::get<bool>(steps[7].port(test_port_0)), false);
+}

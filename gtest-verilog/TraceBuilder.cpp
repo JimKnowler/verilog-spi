@@ -98,24 +98,40 @@ TraceBuilder& TraceBuilder::signal(const std::initializer_list<uint32_t>& stepVa
 }
 
 TraceBuilder& TraceBuilder::repeat(size_t repetitions) {
-    if (currentPort) {
-        repeat(currentSignal, repetitions);    
-    } else {
-        for (auto& port : ports) {
-            repeat(port->stepValues, repetitions);
+    applyModifier([=](std::vector<PortValue>& stepValues) {
+        std::vector<PortValue> newStepValues;
+
+        for (size_t i=0; i<repetitions; i++) {
+            newStepValues.insert(newStepValues.end(), stepValues.begin(), stepValues.end());
         }
-    }
+
+        stepValues = newStepValues;
+    });
 
     return *this;
 }
 
 TraceBuilder& TraceBuilder::repeatEachStep(size_t repetitions) {
-    if (currentPort) {
-        repeatEachStep(currentSignal, repetitions);
-    } else {
-        for (auto& port : ports) {
-            repeatEachStep(port->stepValues, repetitions);
+    applyModifier([=](std::vector<PortValue>& stepValues) {
+        std::vector<PortValue> newStepValues;
+
+        for (const PortValue& value : stepValues ) {
+            for (size_t i=0; i<repetitions; i++) {
+                newStepValues.push_back(value);
+            }
         }
+
+        stepValues = newStepValues;
+    });
+
+    return *this;
+}
+
+TraceBuilder& TraceBuilder::concat() {
+    if (!currentSignal.empty()) {
+        currentPort->stepValues.insert(currentPort->stepValues.end(), currentSignal.begin(), currentSignal.end());
+
+        currentSignal.clear();
     }
 
     return *this;
@@ -133,34 +149,18 @@ void TraceBuilder::finishCurrentPort() {
     currentPort.reset();
 }
 
-void TraceBuilder::concat() {
-    if (!currentSignal.empty()) {
-        currentPort->stepValues.insert(currentPort->stepValues.end(), currentSignal.begin(), currentSignal.end());
-
-        currentSignal.clear();
-    }
-}
-
-void TraceBuilder::repeat(std::vector<PortValue>& stepValues, size_t repetitions) {
-    std::vector<PortValue> newStepValues;
-
-    for (size_t i=0; i<repetitions; i++) {
-        newStepValues.insert(newStepValues.end(), stepValues.begin(), stepValues.end());
-    }
-
-    stepValues = newStepValues;
-}
-
-void TraceBuilder::repeatEachStep(std::vector<PortValue>& stepValues, size_t repetitions) {
-    std::vector<PortValue> newStepValues;
-
-    for (const PortValue& value : stepValues ) {
-        for (size_t i=0; i<repetitions; i++) {
-            newStepValues.push_back(value);
+void TraceBuilder::applyModifier(Modifier modifier) {
+    if (currentPort) {
+        if (!currentSignal.empty()) {
+            modifier(currentSignal);
+        } else {
+            modifier(currentPort->stepValues);
+        }
+    } else {
+        for (auto& port : ports) {
+            modifier(port->stepValues);
         }
     }
-
-    stepValues = newStepValues;
 }
 
 TraceBuilder::Port::Port(const PortDescription& _portDesc) : portDesc(_portDesc) {}
