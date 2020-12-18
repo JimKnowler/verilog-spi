@@ -8,7 +8,9 @@ TraceBuilder::~TraceBuilder() {
 
 }
 
-TraceBuilder::operator Trace() const {
+TraceBuilder::operator Trace() {
+    finishCurrentPort();
+
     std::vector<Step> steps;
 
     if (!ports.empty()) {
@@ -46,6 +48,9 @@ TraceBuilder::operator Trace() const {
 TraceBuilder& TraceBuilder::port(const PortDescription& portDesc) {
     auto port = std::make_shared<Port>(portDesc);
     ports.push_back(port);
+
+    finishCurrentPort();
+
     currentPort = port;
 
     return *this;
@@ -57,17 +62,19 @@ TraceBuilder& TraceBuilder::signal(const std::string& stepValues) {
         throw std::logic_error("unable to add signal without current port");
     }
 
+    concat();
+
     for (char c : stepValues) {
         switch (c) {
             case '0':
             case '_':
                 // lo
-                currentPort->stepValues.push_back(false);
+                currentSignal.push_back(false);
                 break;
             case '1':
             case '-':
                 // hi
-                currentPort->stepValues.push_back(true);
+                currentSignal.push_back(true);
                 break;
             default:
                 // unknown char
@@ -83,14 +90,16 @@ TraceBuilder& TraceBuilder::signal(const std::initializer_list<uint32_t>& stepVa
         throw std::logic_error("unable to add signal without current port");
     }
 
-    currentPort->stepValues.insert(currentPort->stepValues.end(), stepValues.begin(), stepValues.end());
+    concat();
+
+    currentSignal.insert(currentSignal.end(), stepValues.begin(), stepValues.end());
 
     return *this;
 }
 
 TraceBuilder& TraceBuilder::repeat(size_t repetitions) {
     if (currentPort) {
-        repeat(currentPort->stepValues, repetitions);    
+        repeat(currentSignal, repetitions);    
     } else {
         for (auto& port : ports) {
             repeat(port->stepValues, repetitions);
@@ -102,7 +111,7 @@ TraceBuilder& TraceBuilder::repeat(size_t repetitions) {
 
 TraceBuilder& TraceBuilder::repeatEachStep(size_t repetitions) {
     if (currentPort) {
-        repeatEachStep(currentPort->stepValues, repetitions);
+        repeatEachStep(currentSignal, repetitions);
     } else {
         for (auto& port : ports) {
             repeatEachStep(port->stepValues, repetitions);
@@ -113,9 +122,23 @@ TraceBuilder& TraceBuilder::repeatEachStep(size_t repetitions) {
 }
 
 TraceBuilder& TraceBuilder::allPorts() {
-    currentPort.reset();
+    finishCurrentPort();
 
     return *this;
+}
+
+void TraceBuilder::finishCurrentPort() {
+    concat();
+
+    currentPort.reset();
+}
+
+void TraceBuilder::concat() {
+    if (!currentSignal.empty()) {
+        currentPort->stepValues.insert(currentPort->stepValues.end(), currentSignal.begin(), currentSignal.end());
+
+        currentSignal.clear();
+    }
 }
 
 void TraceBuilder::repeat(std::vector<PortValue>& stepValues, size_t repetitions) {

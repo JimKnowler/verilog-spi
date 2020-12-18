@@ -11,7 +11,7 @@ public:
     TraceBuilder();
     ~TraceBuilder();
 
-    operator Trace() const;
+    operator Trace();
 
     // select the port to build
     TraceBuilder& port(const PortDescription& portDesc);
@@ -44,8 +44,12 @@ private:
         std::vector<PortValue> stepValues;
     };
 
+    std::vector<PortValue> currentSignal;
     std::shared_ptr<Port> currentPort;
     std::vector<std::shared_ptr<Port>> ports;
+
+    void concat();
+    void finishCurrentPort();
 
     void repeat(std::vector<PortValue>& stepValues, size_t repetitions);
     void repeatEachStep(std::vector<PortValue>& stepValues, size_t repetitions);
