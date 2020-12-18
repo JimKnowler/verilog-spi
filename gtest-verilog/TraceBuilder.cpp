@@ -108,30 +108,30 @@ namespace testing_verilog {
     }
 
     TraceBuilder& TraceBuilder::repeat(size_t repetitions) {
-        applyModifier([=](std::vector<PortValue>& stepValues) {
-            std::vector<PortValue> newStepValues;
+        applyModifier([=](std::vector<PortValue>& signal) {
+            std::vector<PortValue> newSignal;
 
             for (size_t i=0; i<repetitions; i++) {
-                newStepValues.insert(newStepValues.end(), stepValues.begin(), stepValues.end());
+                newSignal.insert(newSignal.end(), signal.begin(), signal.end());
             }
 
-            stepValues = newStepValues;
+            signal = newSignal;
         });
 
         return *this;
     }
 
     TraceBuilder& TraceBuilder::repeatEachStep(size_t repetitions) {
-        applyModifier([=](std::vector<PortValue>& stepValues) {
-            std::vector<PortValue> newStepValues;
+        applyModifier([=](std::vector<PortValue>& signal) {
+            std::vector<PortValue> newSignal;
 
-            for (const PortValue& value : stepValues ) {
+            for (const PortValue& value : signal ) {
                 for (size_t i=0; i<repetitions; i++) {
-                    newStepValues.push_back(value);
+                    newSignal.push_back(value);
                 }
             }
 
-            stepValues = newStepValues;
+            signal = newSignal;
         });
 
         return *this;
