@@ -45,6 +45,8 @@ namespace testing_verilog {
         /// @brief render a diff between two ports, that lines up with output from renderPort()
         static void renderPortDiff(std::ostream& os, char diffCharacter, ConsoleColour::Colour, size_t maxPortLabelSize, const PortDescription& portDesc, const std::vector<Step>& stepsActual, const std::vector<Step>& stepsExpected);
 
+        /// @brief concatenate traces
+        Trace operator+(const Trace& rhs) const;
     private:
         std::vector<Step> steps;
     };

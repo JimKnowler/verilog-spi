@@ -218,6 +218,44 @@ namespace testing_verilog {
 
         os << "\n";
     }
+
+    Trace Trace::operator+(const Trace& rhs) const {
+        Trace trace;
+
+        if (rhs.steps.size() == 0) {
+            trace = *this;
+
+            return trace;
+        }
+
+        if (steps.size() == 0) {
+            trace = rhs;
+
+            return trace;
+        }
+
+        if (getPortMask() != rhs.getPortMask()) {
+            throw std::logic_error("different port masks");
+        }
+
+        const Step& step = steps[0];
+        const Step& stepRhs = rhs.steps[0];
+        
+        for (uint32_t portId=0; portId<32; portId++) {
+            if (!hasPort(portId)) {
+                continue;
+            }
+
+            if (&step.getPortDescription(portId) != &stepRhs.getPortDescription(portId)) {
+                throw std::logic_error("ports from different modules");
+            }
+        }
+
+        trace.steps.insert(trace.steps.end(), steps.begin(), steps.end());
+        trace.steps.insert(trace.steps.end(), rhs.steps.begin(), rhs.steps.end());
+
+        return trace;
+    }
 }
 
 // TODO

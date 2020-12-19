@@ -1,11 +1,19 @@
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
+using namespace testing;
 
 #include "gtest-verilog/Trace.h"
+#include "gtest-verilog/TraceBuilder.h"
+#include "gtest-verilog/MatchesTrace.h"
 using namespace testing_verilog;
 
 namespace {
     PORT_DESCRIPTION(0, test_port_0, 1);
+    PORT_DESCRIPTION(1, test_port_1, 1);
+    PORT_DESCRIPTION(2, test_port_2, 16);
     PORT_DESCRIPTION(3, test_port_3, 1);
+
+    PORT_DESCRIPTION(1, test_port_1_alternate, 16);
 }
 
 TEST(Trace, ShouldConstruct) {
@@ -97,3 +105,79 @@ TEST(Trace, ShouldFailToGetPortDescriptionForEmptyTrace) {
     ASSERT_ANY_THROW(trace.getPortDescription(3)); 
     ASSERT_ANY_THROW(trace.getPortDescription(4));
 }
+
+TEST(Trace, ShouldConcatenate) {
+    Trace a = TraceBuilder()
+                .port(test_port_0).signal("10")
+                .port(test_port_1).signal("01");
+    
+    Trace b = TraceBuilder()
+                .port(test_port_0).signal("1")
+                .port(test_port_1).signal("0");
+
+    Trace expected = TraceBuilder()
+                .port(test_port_0).signal("101")
+                .port(test_port_1).signal("010");
+
+    EXPECT_THAT(a+b, MatchesTrace(expected));
+}
+
+TEST(Trace, ShouldNotConcatenateTracesWithDifferentNumberOfPorts) {
+    Trace a = TraceBuilder()
+                .port(test_port_0).signal("10")
+                .port(test_port_1).signal("01");
+    
+    Trace b = TraceBuilder()
+                .port(test_port_0).signal("1")
+                .port(test_port_1).signal("0")
+                .port(test_port_3).signal("1");
+
+    EXPECT_ANY_THROW( a + b );
+}
+
+TEST(Trace, ShouldNotConcatenateTracesWithDifferentPorts) {
+    Trace a = TraceBuilder()
+                .port(test_port_0).signal("10")
+                .port(test_port_1).signal("01");
+    
+    Trace b = TraceBuilder()
+                .port(test_port_0).signal("1")
+                .port(test_port_3).signal("1");
+
+    EXPECT_ANY_THROW( a + b );
+}
+
+TEST(Trace, ShouldNotConcatenateTracesWithPortsFromDifferentModules) {
+    Trace a = TraceBuilder()
+                .port(test_port_0).signal("10")
+                .port(test_port_1).signal("01");
+    
+    Trace b = TraceBuilder()
+                .port(test_port_0).signal("1")
+                .port(test_port_1_alternate).signal("1");
+
+    EXPECT_ANY_THROW( a + b );
+}
+
+TEST(Trace, ShouldConcatenateEmptyTrace) {
+    Trace a = TraceBuilder()
+                .port(test_port_0).signal("10")
+                .port(test_port_1).signal("01");
+    
+    Trace b = TraceBuilder();
+
+    EXPECT_THAT(a+b, MatchesTrace(a));
+}
+
+TEST(Trace, ShouldConcatenateToEmptyTrace) {
+    Trace a = TraceBuilder();
+
+    Trace b = TraceBuilder()
+                .port(test_port_0).signal("10")
+                .port(test_port_1).signal("01");
+    
+    EXPECT_THAT(a+b, MatchesTrace(b));
+}
+
+
+// todo: slice
