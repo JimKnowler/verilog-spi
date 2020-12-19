@@ -39,18 +39,32 @@ TEST_F(SPIController, ShouldIdleSpiClockWhileIdle) {
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedTrace));
 }
 
+TEST_F(SPIController, ShouldSetupSend) {
+    auto& core = testBench.core();
+    
+    // setup a tx by pulsing command lines
+    core.i_tx_dv = 1;
+    core.i_tx_byte = 0xFF;
+    testBench.tick();
+
+    const Trace expectedTrace = TraceBuilder()
+        .port(i_clk).signal(      "10" )
+        .port(o_tx_ready).signal( "00" )      // should be 0 during setup
+        .port(o_spi_clk).signal(  "00" )      // should not be pulsed during setup
+        .port(o_spi_copi).signal( "00" );     // should be 0 during setup
+    
+    EXPECT_THAT(testBench.trace, MatchesTrace(expectedTrace));
+}
+
 TEST_F(SPIController, ShouldSendByte0xFF) { 
     auto& core = testBench.core();
     
-    // start sending by pulsing command lines
+    // setup a tx by pulsing command lines
     core.i_tx_dv = 1;
     core.i_tx_byte = 0xFF;
     testBench.tick();
     
     // reset trace, so we only capture signals during the transmission
-    // TODO: or, should we include the first tick in Trace, to make sure that
-    //       SPI lines are idle?
-    // IDEA: support concatenating Traces 
     testBench.trace.clear();
 
     // send in progress
@@ -79,9 +93,6 @@ TEST_F(SPIController, ShouldSendByte0xAA) {
     testBench.tick();
     
     // reset trace, so we only capture signals during the transmission
-    // TODO: or, should we include the first tick in Trace, to make sure that
-    //       SPI lines are idle?
-    // IDEA: support concatenating Traces 
     testBench.trace.clear();
 
     // send in progress
@@ -111,9 +122,6 @@ TEST_F(SPIController, ShouldSendByte0x55) {
     testBench.tick();
     
     // reset trace, so we only capture signals during the transmission
-    // TODO: or, should we include the first tick in Trace, to make sure that
-    //       SPI lines are idle?
-    // IDEA: support concatenating Traces 
     testBench.trace.clear();
 
     // send in progress
