@@ -179,5 +179,50 @@ TEST(Trace, ShouldConcatenateToEmptyTrace) {
     EXPECT_THAT(a+b, MatchesTrace(b));
 }
 
+TEST(Trace, ShouldSliceWithinRange) {
+    Trace a = TraceBuilder()
+                .port(test_port_0).signal("10110")
+                .port(test_port_1).signal("01001");
 
-// todo: slice
+    Trace b = TraceBuilder()
+                .port(test_port_0).signal("10")
+                .port(test_port_1).signal("01");
+    
+    EXPECT_THAT(a.slice(0,2), MatchesTrace(b));
+}
+
+TEST(Trace, ShouldSliceOutOfRange) {
+    Trace a = TraceBuilder()
+                .port(test_port_0).signal("10110")
+                .port(test_port_1).signal("01001");
+
+    Trace b = TraceBuilder();
+    
+    EXPECT_THAT(a.slice(9,3), MatchesTrace(b));
+}
+
+TEST(Trace, ShouldSliceOverlappingRange) {
+    Trace a = TraceBuilder()
+                .port(test_port_0).signal("10110")
+                .port(test_port_1).signal("01001");
+
+    Trace b = TraceBuilder()
+                .port(test_port_0).signal("110")
+                .port(test_port_1).signal("001");
+    
+    EXPECT_THAT(a.slice(2,10), MatchesTrace(b));
+}
+
+TEST(Trace, ShouldSliceEntireRange) {
+    Trace a = TraceBuilder()
+                .port(test_port_0).signal("10110")
+                .port(test_port_1).signal("01001");
+    
+    EXPECT_THAT(a.slice(0,100), MatchesTrace(a));
+}
+
+TEST(Trace, ShouldSliceFromEmptyTrace) {
+    Trace a;
+
+    EXPECT_THAT(a.slice(0,10), MatchesTrace(a));
+}

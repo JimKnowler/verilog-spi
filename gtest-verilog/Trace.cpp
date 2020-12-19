@@ -256,6 +256,21 @@ namespace testing_verilog {
 
         return trace;
     }
+
+    Trace Trace::slice(size_t start, size_t size) {
+        Trace trace;
+
+        if (start >= steps.size()) {
+            return trace;
+        }
+
+        auto st = steps.begin() + start;
+        auto et = st + std::min(size, steps.size() - start);
+
+        trace.steps.insert(trace.steps.end(), st, et);
+
+        return trace;
+    }
 }
 
 // TODO

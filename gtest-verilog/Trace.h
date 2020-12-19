@@ -47,6 +47,11 @@ namespace testing_verilog {
 
         /// @brief concatenate traces
         Trace operator+(const Trace& rhs) const;
+
+        /// @brief copy a subset of the trace
+        /// @param start is index of first step
+        /// @param size is maximum number of steps
+        Trace slice(size_t start, size_t size);
     private:
         std::vector<Step> steps;
     };
