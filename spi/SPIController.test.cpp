@@ -26,6 +26,7 @@ TEST_F(SPIController, ShouldConstructFixture) {
 }
 
 TEST_F(SPIController, ShouldReportReadyToTransmit) {
+    testBench.tick();           // give core a clock cycle to settle after reset
     ASSERT_EQ(1, testBench.core().o_tx_ready);
 }
 
@@ -108,7 +109,6 @@ TEST_F(SPIController, ShouldSendByte0xAA) {
     
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedTrace));
 }
-
 
 TEST_F(SPIController, ShouldSendByte0x55) { 
     // 0x55 => 0b01010101
