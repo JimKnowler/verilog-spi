@@ -18,6 +18,22 @@ namespace {
             testBench.trace.clear();
         }
 
+        void helperSetupSendByte(uint8_t byte) {
+            auto& core = testBench.core();
+            
+            // start sending by pulsing command lines
+            core.i_tx_dv = 1;
+            core.i_tx_byte = byte;
+            testBench.tick();
+            
+            // reset trace, so we only capture signals during the transmission
+            testBench.trace.clear();
+
+            // send in progress, clear the external inputs
+            core.i_tx_dv = 0;
+            core.i_tx_byte = 0;
+        }
+
         SPIControllerTestBench testBench;
     };
 }
@@ -77,19 +93,8 @@ TEST_F(SPIController, ShouldSetupSend) {
 }
 
 TEST_F(SPIController, ShouldSendByte0xFF) { 
-    auto& core = testBench.core();
+    helperSetupSendByte(0xFF);
     
-    // setup a tx by pulsing command lines
-    core.i_tx_dv = 1;
-    core.i_tx_byte = 0xFF;
-    testBench.tick();
-    
-    // reset trace, so we only capture signals during the transmission
-    testBench.trace.clear();
-
-    // send in progress
-    core.i_tx_dv = 0;
-    core.i_tx_byte = 0;
     testBench.tick(8 * 2);
     
     const Trace expectedTrace = TraceBuilder()
@@ -103,21 +108,8 @@ TEST_F(SPIController, ShouldSendByte0xFF) {
 }
 
 TEST_F(SPIController, ShouldSendByte0xAA) { 
-    // 0xAA => 0b10101010
+    helperSetupSendByte(0xAA);                      // 0xAA => 0b10101010
 
-    auto& core = testBench.core();
-    
-    // start sendingby pulsing command lines
-    core.i_tx_dv = 1;
-    core.i_tx_byte = 0xAA;
-    testBench.tick();
-    
-    // reset trace, so we only capture signals during the transmission
-    testBench.trace.clear();
-
-    // send in progress
-    core.i_tx_dv = 0;
-    core.i_tx_byte = 0;
     testBench.tick(8 * 2);
     
     const Trace expectedTrace = TraceBuilder()
@@ -131,21 +123,10 @@ TEST_F(SPIController, ShouldSendByte0xAA) {
 }
 
 TEST_F(SPIController, ShouldSendByte0x55) { 
-    // 0x55 => 0b01010101
     
-    auto& core = testBench.core();
     
-    // start sending by pulsing command lines
-    core.i_tx_dv = 1;
-    core.i_tx_byte = 0x55;
-    testBench.tick();
-    
-    // reset trace, so we only capture signals during the transmission
-    testBench.trace.clear();
+    helperSetupSendByte(0x55);                      // 0x55 => 0b01010101       
 
-    // send in progress
-    core.i_tx_dv = 0;
-    core.i_tx_byte = 0;
     testBench.tick(8 * 2);
     
     const Trace expectedTrace = TraceBuilder()
@@ -157,6 +138,20 @@ TEST_F(SPIController, ShouldSendByte0x55) {
     
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedTrace));
 }
+
+TEST_F(SPIController, ShouldReportTxReadyAfterSendComplete) {
+    
+}
+
+// report o_tx_ready=1 after finish transmission
+
+
+// receive at same time as transmission
+// report o_rx_dv=1 for one cycle when receive is complete
+// test that receive is sampling at middle of clock cycle
+
+
+
 
 // send and receive byte - when is o_RX_DV pulsed? when does o_TX_Ready go high?
 //
