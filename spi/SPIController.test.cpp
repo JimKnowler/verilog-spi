@@ -25,6 +25,18 @@ namespace {
 TEST_F(SPIController, ShouldConstructFixture) {
 }
 
+TEST_F(SPIController, ShouldReset) {
+    testBench.reset();
+
+    const Trace expectedTrace = TraceBuilder()
+        .port(o_tx_ready).signal("0")
+        .port(o_spi_clk).signal("0")
+        .port(o_spi_copi).signal("0")
+        .allPorts().repeat(2);
+
+    EXPECT_THAT(testBench.trace, MatchesTrace(expectedTrace));
+}
+
 TEST_F(SPIController, ShouldReportReadyToTransmit) {
     testBench.tick();           // give core a clock cycle to settle after reset
     ASSERT_EQ(1, testBench.core().o_tx_ready);
@@ -139,10 +151,7 @@ TEST_F(SPIController, ShouldSendByte0x55) {
 }
 
 // send and receive byte - when is o_RX_DV pulsed? when does o_TX_Ready go high?
-// 
- 
-// note: assume single clock cycle per half tick
-// note: helper to tick + sample outputs at rising/falling edge
+//
 
 // send TX byte
 //   cache TX byte when starting to write
@@ -155,6 +164,4 @@ TEST_F(SPIController, ShouldSendByte0x55) {
 // configure the number of bytes we expect back from the peripheral (is this always 1?)
 
 // TODO - parameterised CLKS_PER_HALF_BIT
-// TODO - parameterised SPI mode
-
-// todo: reset - check trace
+//           -> via parameter to verilog module
