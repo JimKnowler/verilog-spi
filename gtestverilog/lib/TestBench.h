@@ -7,6 +7,8 @@
 
 namespace gtestverilog {
 
+	/// @class TestBench
+	/// @brief Templated base class for simulating a verilated verilog module
 	template<class MODULE>
 	class TestBench {
 	public:
@@ -23,12 +25,15 @@ namespace gtestverilog {
 			m_core.release();
 		}
 
+		/// @brief set the 'i_reset' port high and simulate a tick
 		void reset(void) {
 			m_core->i_reset = 1;
 			tick();
 			m_core->i_reset = 0;
 		}
 
+		/// @brief simulate a clock cycle
+		/// @note a clock cycle has two steps - first step has port 'i_clk'=1, the second step has port 'i_clk'=0
 		void tick(size_t numTicks = 1) {
 			for (size_t i=0; i<numTicks; i++) {
 				// rising edge
@@ -41,6 +46,8 @@ namespace gtestverilog {
 			}
 		}
 
+		/// @brief simulate a single half clock step
+		/// @note This will invert the current value on port 'i_clk'
 		void nextStep() {
 			m_core->i_clk = (m_core->i_clk) ? 0 : 1;
 			m_core->eval();
