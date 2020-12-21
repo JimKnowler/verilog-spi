@@ -38,8 +38,15 @@ TEST_F(SPIController, ShouldReset) {
 }
 
 TEST_F(SPIController, ShouldReportReadyToTransmit) {
-    testBench.tick();           // give core a clock cycle to settle after reset
-    ASSERT_EQ(1, testBench.core().o_tx_ready);
+    testBench.tick(10);           // give core a clock cycle to settle after reset
+    
+    const Trace expectedTrace = TraceBuilder()
+        .port(o_tx_ready).signal("1")
+        .port(o_spi_clk).signal("0")
+        .port(o_spi_copi).signal("0")
+        .allPorts().repeat(20);
+    
+    EXPECT_THAT(testBench.trace, MatchesTrace(expectedTrace));
 }
 
 TEST_F(SPIController, ShouldIdleSpiClockWhileIdle) {
