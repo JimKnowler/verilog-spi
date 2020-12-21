@@ -6,7 +6,7 @@
 #include "PortDescription.h"
 #include "PortValue.h"
 
-namespace testing_verilog {
+namespace gtestverilog {
     /// @class Step
     /// @brief encapsulate state of ports at a step in a simulation
     class Step {

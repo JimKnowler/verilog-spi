@@ -1,12 +1,11 @@
 #include <gtest/gtest.h>
 using namespace testing;
 
-#include "gtest-verilog/TraceBuilder.h"
-#include "gtest-verilog/MatchesTrace.h"
-using namespace testing_verilog;
+#include "gtestverilog/gtestverilog.h"
+using namespace gtestverilog;
 
-#include "Counter.gtest-verilog.h"
-using namespace counter;
+#include "gtestverilog/CounterTestBench.h"
+using namespace countertestbench;
 
 namespace {
     class Counter : public ::testing::Test {
@@ -17,7 +16,7 @@ namespace {
         void TearDown() override {
         }
 
-        ::counter::TestBench testBench;
+        CounterTestBench testBench;
     };
 }
 

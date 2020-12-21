@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-namespace testing_verilog {
+namespace gtestverilog {
     Trace::Trace() {
     }
 

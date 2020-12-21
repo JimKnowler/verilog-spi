@@ -1,8 +1,14 @@
 load("@rules_verilator//verilator:defs.bzl", "verilator_cc_library")
+load("//gtestverilog:defs.bzl", "gtest_verilog_testbench")
 
 verilator_cc_library(
     name = "SPIController",
     srcs = ["SPIController.v"],
+)
+
+gtest_verilog_testbench(
+    name = "SPIControllerTestBench",
+    deps = [":SPIController"]
 )
 
 cc_test(
@@ -12,10 +18,10 @@ cc_test(
             "**/*.cpp",
             "**/*.h"
         ]
-    ),
+    ) + [":SPIControllerTestBench"],
     deps = [
         "@com_google_googletest//:gtest",
-        "//gtest-verilog:lib",
+        "//gtestverilog:lib",
         ":SPIController",
     ],
 )

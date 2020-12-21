@@ -15,8 +15,8 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug gtest-verilog tests",
-            "program": "${workspaceFolder}/bazel-bin/gtest-verilog/test/test",
+            "name": "Debug gtestverilog tests",
+            "program": "${workspaceFolder}/bazel-bin/gtestverilog/test/test",
             "args": [],
             "cwd": "${workspaceFolder}"
         }

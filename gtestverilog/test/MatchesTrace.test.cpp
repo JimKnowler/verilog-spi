@@ -1,9 +1,8 @@
 #include <gmock/gmock.h>
 using namespace testing;
 
-#include "gtest-verilog/MatchesTrace.h"
-#include "gtest-verilog/TraceBuilder.h"
-using namespace testing_verilog;
+#include "gtestverilog/gtestverilog.h"
+using namespace gtestverilog;
 
 namespace {
     PORT_DESCRIPTION(0, test_port_0, 1);

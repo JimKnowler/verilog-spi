@@ -1,6 +1,6 @@
 #include "ConsoleColour.h"
 
-namespace testing_verilog {
+namespace gtestverilog {
 
     ConsoleColour::ConsoleColour() {
         reset();

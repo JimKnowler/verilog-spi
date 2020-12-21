@@ -1,6 +1,6 @@
 #include "PortDescription.h"
 
-namespace testing_verilog {
+namespace gtestverilog {
 
     PortDescription::PortDescription() : m_id(0xffffffff), m_label("undefined"), m_width(0xffffffff) {
 

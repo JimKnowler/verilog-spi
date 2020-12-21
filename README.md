@@ -28,31 +28,31 @@ The test executable can be run from the 'bazel-bin' output directory with:
 $ ./bazel-bin/spi/test
 ```
 
-# Build & Run Unit Tests for gtest-verilog
+# Build & Run Unit Tests for gtestverilog
 
 While standing in project's root directory, use Bazel to build the test target:
 
 ```
-$ bazel build //gtest-verilog:test
+$ bazel build //gtestverilog:test
 ```
 
 The test executable can be run from the 'bazel-bin' output directory with:
 
 ```
-$ ./bazel-bin/gtest-verilog/test
+$ ./bazel-bin/gtestverilog/test
 ```
-# Build & Run 'counter' Example for gtest-verilog
+# Build & Run 'counter' Example for gtestverilog
 
 While standing in project's root directory, use Bazel to build the test target:
 
 ```
-$ bazel build //gtest-verilog:example
+$ bazel build //gtestverilog:example
 ```
 
 The test executable can be run from the 'bazel-bin' output directory with:
 
 ```
-$ ./bazel-bin/gtest-verilog/example
+$ ./bazel-bin/gtestverilog/example
 ```
 
 # NOTES

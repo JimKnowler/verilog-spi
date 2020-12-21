@@ -4,12 +4,11 @@
 #include <gmock/gmock.h>
 using namespace testing;
 
-#include "gtest-verilog/MatchesTrace.h"
-#include "gtest-verilog/TraceBuilder.h"
-using namespace testing_verilog;
+#include "gtestverilog/gtestverilog.h"
+using namespace gtestverilog;
 
-#include "SPIController.gtest-verilog.h"
-using namespace spi_controller;
+#include "spi/SPIControllerTestBench.h"
+using namespace spicontrollertestbench;
 
 namespace {
     class SPIController : public ::testing::Test {
@@ -19,7 +18,7 @@ namespace {
             testBench.trace.clear();
         }
 
-        ::spi_controller::TestBench testBench;
+        SPIControllerTestBench testBench;
     };
 }
 

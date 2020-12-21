@@ -3,9 +3,9 @@
 #include <cstdint>
 #include <cstdlib>
 
-#define PORT_DESCRIPTION(id, name, width) PortDescription name(id, #name, width)
+#define PORT_DESCRIPTION(id, name, width) ::gtestverilog::PortDescription name(id, #name, width)
 
-namespace testing_verilog {
+namespace gtestverilog {
 
     class PortDescription {
     public:

@@ -3,6 +3,6 @@
 #include <variant>
 #include <cstdint>
 
-namespace testing_verilog {
+namespace gtestverilog {
     typedef std::variant<bool, uint32_t> PortValue;
 }

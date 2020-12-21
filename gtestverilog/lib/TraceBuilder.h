@@ -6,7 +6,7 @@
 
 #include "Trace.h"
 
-namespace testing_verilog {
+namespace gtestverilog {
 
     class TraceBuilder {
     public:

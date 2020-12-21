@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <memory>
 
-namespace testing_verilog {
+namespace gtestverilog {
 
 	template<class MODULE>
 	class TestBench {

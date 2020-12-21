@@ -2,7 +2,7 @@
 
 #include "Trace.h"
 
-namespace testing_verilog {
+namespace gtestverilog {
 
     namespace matches_trace {
         bool compare(const Trace& a, const Trace& b, ::testing::MatchResultListener& listener);

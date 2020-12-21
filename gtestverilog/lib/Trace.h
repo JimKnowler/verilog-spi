@@ -6,7 +6,7 @@
 #include "Step.h"
 #include "ConsoleColour.h"
 
-namespace testing_verilog {
+namespace gtestverilog {
     class Trace {
     public:
         Trace();

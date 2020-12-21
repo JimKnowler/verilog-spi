@@ -2,7 +2,7 @@
 
 #include <ostream>
 
-namespace testing_verilog {
+namespace gtestverilog {
 
     /// @brief based on MacOS console colours described here:
     ///  https://stackoverflow.com/questions/33309136/change-color-in-os-x-console-output

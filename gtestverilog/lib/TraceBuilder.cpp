@@ -1,6 +1,6 @@
 #include "TraceBuilder.h"
 
-namespace testing_verilog {
+namespace gtestverilog {
 
     TraceBuilder::TraceBuilder() {
 

@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 using namespace testing;
 
-#include "gtest-verilog/TestBench.h"
-using namespace testing_verilog;
+#include "gtestverilog/gtestverilog.h"
+using namespace gtestverilog;
 
 namespace {
     class TestCore {

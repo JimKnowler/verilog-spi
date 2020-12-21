@@ -1,6 +1,6 @@
 #include "Step.h"
 
-namespace testing_verilog {
+namespace gtestverilog {
 
     Step::Step() {
         portMask = 0;
