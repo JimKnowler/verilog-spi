@@ -41,10 +41,11 @@ TEST_F(SPIController, ShouldReportReadyToTransmit) {
     testBench.tick(10);           // give core a clock cycle to settle after reset
     
     const Trace expectedTrace = TraceBuilder()
-        .port(o_tx_ready).signal("1")
-        .port(o_spi_clk).signal("0")
-        .port(o_spi_copi).signal("0")
-        .allPorts().repeat(20);
+        .port(i_clk).signal("10")
+        .port(o_tx_ready).signal("11")
+        .port(o_spi_clk).signal("00")
+        .port(o_spi_copi).signal("00")
+        .allPorts().repeat(10);
     
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedTrace));
 }
