@@ -223,7 +223,6 @@ TEST_F(SPIController, ShouldReportReceivedByte0x55) {
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedTrace));
 }
 
-// test that receive is sampling at middle of clock cycle
 TEST_F(SPIController, ShouldSampleControllerInOnFallingEdge) {
     helperSetupSendByte(0);
     helperSimulateReceiveByte(0x55,2,1,1);
@@ -240,8 +239,37 @@ TEST_F(SPIController, ShouldSampleControllerInOnFallingEdge) {
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedTrace));
 }
 
-// TODO: send/receive a sequence of bytes
-// - remove current dependency on reset signal between bytes
+TEST_F(SPIController, ShouldSendAndReceiveMultipleBytes) {
+    // simulate sending first byte
+    helperSetupSendByte(0x12);                      
+    helperSimulateReceiveByte(0x34);
+    testBench.tick(2);
+    testBench.trace.clear();
+
+    // simulate sending second byte
+    helperSetupSendByte(0x55);                      // 0x55 => 0b01010101 
+    helperSimulateReceiveByte(0xBB);
+    testBench.tick(2);
+
+    const Trace expectedSendTrace = TraceBuilder()
+        .port(i_clk).signal(      "10101010" )
+        .port(o_tx_ready).signal( "00000000" )      // should be 0 while sending
+        .port(o_spi_clk).signal(  "11001100" )      // should be pulsed every other tick while sending
+        .port(o_spi_copi).signal( "00001111" )      // should alternate 0,1 while sending
+        .port(o_rx_dv).signal(    "00000000" )
+        .port(o_rx_byte).signal(  {0} ).repeat(8)
+        .allPorts().repeat(4);
+
+    const Trace expectedReceiveTrace = TraceBuilder()
+        .port(i_clk).signal(        "1010" )
+        .port(o_tx_ready).signal(   "1111" )
+        .port(o_spi_clk).signal(    "0000" )
+        .port(o_spi_copi).signal(   "0000" )
+        .port(o_rx_dv).signal(      "1100" )
+        .port(o_rx_byte).signal(    {0xBB, 0} ).repeatEachStep(2);
+
+    EXPECT_THAT(testBench.trace, MatchesTrace(expectedSendTrace + expectedReceiveTrace));
+}
 
 // TODO: parameterised MODE
 //       -> via parameter to verilog module
