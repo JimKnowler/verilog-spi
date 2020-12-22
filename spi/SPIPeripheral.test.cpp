@@ -348,15 +348,9 @@ TEST_F(SPIPeripheral, ShouldObserveChipSelect) {
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedReceiveTrace + expectedReceivedTrace));
 }
 
-// should disconnect o_spi_cipo when cs is high
+// todo: externally - should disconnect o_spi_cipo (z) when cs is high
 
-// receive on falling edge
-
-// value of o_spi_cipo when finished sending / receiving
-//  -> is there a safe time to turn off the value?
-//     - when we expect clock cycle to end?
-//     - when we have finished receiving value?
-//     - 'n' clock cycles after the last falling edge? buffering-across-clock-domains
+// todo: should receive on falling edge
 
 // TODO: parameterised MODE
 //       -> via parameter to verilog module
