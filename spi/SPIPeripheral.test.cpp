@@ -189,9 +189,6 @@ TEST_F(SPIPeripheral, ShouldReceiveByte0x55) {
     
     helperSimulateReceiveByte(0x55);            // 0x55 => 0b01010101
 
-    // receive o_rx_dv & o_rx_byte
-    testBench.tick(3);
-    
     const Trace expectedReceiveTrace = TraceBuilder()
         .port(i_clk).signal( "1010" )
         .port(o_rx_dv).signal( "0000" )
@@ -201,6 +198,9 @@ TEST_F(SPIPeripheral, ShouldReceiveByte0x55) {
         .port(o_spi_cipo).signal( "0000" )
         .allPorts().repeat(8)
         .port(i_spi_copi).signal( "00001111" ).repeat(4);
+    
+    // receive o_rx_dv & o_rx_byte
+    testBench.tick(3);
     
     const Trace expectedReceivedTrace = TraceBuilder()
         .port(i_clk).signal( "101010" )
@@ -214,6 +214,70 @@ TEST_F(SPIPeripheral, ShouldReceiveByte0x55) {
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedReceiveTrace + expectedReceivedTrace));
 }
 
+TEST_F(SPIPeripheral, ShouldSend_0xAA_AndReceive_0x55) {
+    helperSetupSendByte(0xAA); 
+
+    testBench.core().i_spi_cs_n = 0;
+    
+    helperSimulateReceiveByte(0x55);
+
+    const Trace expectedReceiveTrace = TraceBuilder()
+        .port(i_clk).signal( "1010" )
+        .port(o_rx_dv).signal( "0000" )
+        .port(o_rx_byte).signal( {0,0,0,0})
+        .port(i_spi_clk).signal( "1100")
+        .port(i_spi_cs_n).signal( "0000" )
+        .allPorts().repeat(8)
+        .port(o_spi_cipo).signal( "11110000" ).repeat(4)
+        .port(i_spi_copi).signal( "00001111" ).repeat(4);
+    
+    // receive o_rx_dv & o_rx_byte
+    testBench.tick(3);
+    
+    const Trace expectedReceivedTrace = TraceBuilder()
+        .port(i_clk).signal( "101010" )
+        .port(o_rx_dv).signal( "001100" ) 
+        .port(o_rx_byte).signal( {0,0x55,0}).repeatEachStep(2)
+        .port(i_spi_clk).signal( "000000")
+        .port(i_spi_cs_n).signal( "000000" )
+        .port(o_spi_cipo).signal( "000000" )
+        .port(i_spi_copi).signal( "000000" );
+    
+    EXPECT_THAT(testBench.trace, MatchesTrace(expectedReceiveTrace + expectedReceivedTrace));
+}
+
+TEST_F(SPIPeripheral, ShouldSend_0x55_AndReceive_0xAA) {
+    helperSetupSendByte(0x55); 
+
+    testBench.core().i_spi_cs_n = 0;
+    
+    helperSimulateReceiveByte(0xAA);
+
+    const Trace expectedReceiveTrace = TraceBuilder()
+        .port(i_clk).signal( "1010" )
+        .port(o_rx_dv).signal( "0000" )
+        .port(o_rx_byte).signal( {0,0,0,0})
+        .port(i_spi_clk).signal( "1100")
+        .port(i_spi_cs_n).signal( "0000" )
+        .allPorts().repeat(8)
+        .port(o_spi_cipo).signal( "00001111" ).repeat(4)
+        .port(i_spi_copi).signal( "11110000" ).repeat(4);
+    
+    // receive o_rx_dv & o_rx_byte
+    testBench.tick(3);
+    
+    const Trace expectedReceivedTrace = TraceBuilder()
+        .port(i_clk).signal( "101010" )
+        .port(o_rx_dv).signal( "001100" ) 
+        .port(o_rx_byte).signal( {0,0xAA,0}).repeatEachStep(2)
+        .port(i_spi_clk).signal( "000000")
+        .port(i_spi_cs_n).signal( "000000" )
+        .port(o_spi_cipo).signal( "111111" )    // note: signal is hi because last bit of 0xAA is hi
+        .port(i_spi_copi).signal( "000000" );
+        
+    
+    EXPECT_THAT(testBench.trace, MatchesTrace(expectedReceiveTrace + expectedReceivedTrace));
+}
 
 // send / receive multiple bytes
 // - should user have to specify send byte every time? or should it default to 0?
