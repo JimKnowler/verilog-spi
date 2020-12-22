@@ -34,16 +34,26 @@ namespace {
             core.i_tx_byte = 0;
         }
 
-        void helperSimulateReceiveByte(uint8_t byte) {
+        void helperSimulateReceiveByte(uint8_t byte, uint32_t numStepsSetup = 0, uint32_t numStepsValid = 4, uint32_t numStepsPadding = 0) {
             auto& core = testBench.core();
             
             for (uint32_t index = 0; index < 8; index++) {
-                core.i_spi_cipo = (byte >> (7-index)) & 0x1;
-                testBench.tick(2);
-            }
+                core.i_spi_cipo = 0;
+                for (uint32_t i=0; i<numStepsSetup; i++) {
+                    testBench.nextStep();
+                }
 
-            // restore i_spi_cipo to idle
-            core.i_spi_cipo = 0;
+                core.i_spi_cipo = (byte >> (7-index)) & 0x1;                
+                for (uint32_t i=0; i<numStepsValid; i++) {
+                    testBench.nextStep();
+                }
+
+                core.i_spi_cipo = 0;
+                
+                for (uint32_t i=0; i<numStepsPadding; i++) {
+                    testBench.nextStep();
+                }
+            }
         };
 
         SPIControllerTestBench testBench;
@@ -199,7 +209,7 @@ TEST_F(SPIController, ShouldReportReceivedByte0x42) {
 
 TEST_F(SPIController, ShouldReportReceivedByte0x55) {
     helperSetupSendByte(0);
-    helperSimulateReceiveByte(0x55);
+    helperSimulateReceiveByte(0x55);                            // 0x55 => 0b01010101 
     testBench.trace.clear();
 
     testBench.tick(2);
@@ -214,6 +224,24 @@ TEST_F(SPIController, ShouldReportReceivedByte0x55) {
 }
 
 // test that receive is sampling at middle of clock cycle
+TEST_F(SPIController, ShouldSampleControllerInOnFallingEdge) {
+    helperSetupSendByte(0);
+    helperSimulateReceiveByte(0x55,2,1,1);
+    testBench.trace.clear();
+
+    testBench.tick(2);
+
+    const Trace expectedTrace = TraceBuilder()
+        .port(i_clk).signal(        "1010" )
+        .port(i_spi_cipo).signal(   "0000")
+        .port(o_rx_dv).signal(      "1100")
+        .port(o_rx_byte).signal(    {0x55, 0} ).repeatEachStep(2);
+
+    EXPECT_THAT(testBench.trace, MatchesTrace(expectedTrace));
+}
+
+// TODO: send/receive a sequence of bytes
+// - remove current dependency on reset signal between bytes
 
 // TODO: parameterised MODE
 //       -> via parameter to verilog module

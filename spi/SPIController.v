@@ -110,7 +110,7 @@ begin
 end
 
 // capture CIPO data
-always @(posedge o_spi_clk or posedge i_reset) 
+always @(negedge o_spi_clk or posedge i_reset) 
 begin
     if (i_reset)
     begin
