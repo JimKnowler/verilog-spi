@@ -34,6 +34,18 @@ namespace {
             core.i_tx_byte = 0;
         }
 
+        void helperSimulateReceiveByte(uint8_t byte) {
+            auto& core = testBench.core();
+            
+            for (uint32_t index = 0; index < 8; index++) {
+                core.i_spi_cipo = (byte >> (7-index)) & 0x1;
+                testBench.tick(2);
+            }
+
+            // restore i_spi_cipo to idle
+            core.i_spi_cipo = 0;
+        };
+
         SPIControllerTestBench testBench;
     };
 }
@@ -155,26 +167,59 @@ TEST_F(SPIController, ShouldReportTxReadyAfterSendComplete) {
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedTrace));
 }
 
-// receive at same time as transmission
-// report o_rx_dv=1 for one cycle when receive is complete
-// report the received byte when o_rx_dv=1
+TEST_F(SPIController, ShouldReceiveByte0x42) {
+    helperSetupSendByte(0);
+
+    helperSimulateReceiveByte(0x42);
+
+    const Trace expectedTrace = TraceBuilder()
+        .port(i_clk).signal(        "10101010" ).repeat(4)
+        .port(i_spi_cipo).signal(   "01000010").repeatEachStep(4)
+        .port(o_rx_dv).signal(      "0").repeat(4 * 8)
+        .port(o_rx_byte).signal(    {0}       ).repeat(4 * 8);
+
+    EXPECT_THAT(testBench.trace, MatchesTrace(expectedTrace));
+}
+
+TEST_F(SPIController, ShouldReportReceivedByte0x42) {
+    helperSetupSendByte(0);
+    helperSimulateReceiveByte(0x42);
+    testBench.trace.clear();
+
+    testBench.tick(2);
+
+    const Trace expectedTrace = TraceBuilder()
+        .port(i_clk).signal(        "1010" )
+        .port(i_spi_cipo).signal(   "0000")
+        .port(o_rx_dv).signal(      "1100")
+        .port(o_rx_byte).signal(    {0x42, 0} ).repeatEachStep(2);
+
+    EXPECT_THAT(testBench.trace, MatchesTrace(expectedTrace));
+}
+
+TEST_F(SPIController, ShouldReportReceivedByte0x55) {
+    helperSetupSendByte(0);
+    helperSimulateReceiveByte(0x55);
+    testBench.trace.clear();
+
+    testBench.tick(2);
+
+    const Trace expectedTrace = TraceBuilder()
+        .port(i_clk).signal(        "1010" )
+        .port(i_spi_cipo).signal(   "0000")
+        .port(o_rx_dv).signal(      "1100")
+        .port(o_rx_byte).signal(    {0x55, 0} ).repeatEachStep(2);
+
+    EXPECT_THAT(testBench.trace, MatchesTrace(expectedTrace));
+}
+
 // test that receive is sampling at middle of clock cycle
 
+// TODO: parameterised MODE
+//       -> via parameter to verilog module
+// - does o_spi_clk idle to high or low?
+// - is data set at rising/falling edge?
+// - is data sampled at rising/falling edge?
 
-
-
-// send and receive byte - when is o_RX_DV pulsed? when does o_TX_Ready go high?
-//
-
-// send TX byte
-//   cache TX byte when starting to write
-// receive RX byte
-//   data from peripheral
-//   pulse o_rx_dv for a single clock cycle
-// idle clock after send/receive has finished
-//   SPI modes - is clock idle high or low?
-// o_tx_ready - should it return to high immediately after sending a byte to peripheral, or after receiving a byte from the peripheral?
-// configure the number of bytes we expect back from the peripheral (is this always 1?)
-
-// TODO - parameterised CLKS_PER_HALF_BIT
-//           -> via parameter to verilog module
+// TODO: parameterised CLKS_PER_HALF_BIT
+//        -> via parameter to verilog module
