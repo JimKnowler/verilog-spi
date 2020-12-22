@@ -123,8 +123,6 @@ TEST_F(SPIController, ShouldSendByte0xAA) {
 }
 
 TEST_F(SPIController, ShouldSendByte0x55) { 
-    
-    
     helperSetupSendByte(0x55);                      // 0x55 => 0b01010101       
 
     testBench.tick(8 * 2);
@@ -140,14 +138,26 @@ TEST_F(SPIController, ShouldSendByte0x55) {
 }
 
 TEST_F(SPIController, ShouldReportTxReadyAfterSendComplete) {
+    helperSetupSendByte(0x55);                      // 0x55 => 0b01010101       
+
+    testBench.tick(8 * 2);
+    testBench.trace.clear();
+
+    testBench.tick(10);
     
+    const Trace expectedTrace = TraceBuilder()
+        .port(i_clk).signal(      "10" )
+        .port(o_tx_ready).signal( "11" )
+        .port(o_spi_clk).signal(  "00" )
+        .port(o_spi_copi).signal( "00" )
+        .allPorts().repeat(10);
+    
+    EXPECT_THAT(testBench.trace, MatchesTrace(expectedTrace));
 }
-
-// report o_tx_ready=1 after finish transmission
-
 
 // receive at same time as transmission
 // report o_rx_dv=1 for one cycle when receive is complete
+// report the received byte when o_rx_dv=1
 // test that receive is sampling at middle of clock cycle
 
 
