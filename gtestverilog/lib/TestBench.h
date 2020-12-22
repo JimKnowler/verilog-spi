@@ -57,16 +57,17 @@ namespace gtestverilog {
 			onNextStep();
 		}
 
-		virtual void onNextStep() {
-
-		}
-
 		MODULE& core() {
 			return *m_core;
 		}
 
 		uint64_t stepCount() const {
 			return m_stepCount;
+		}
+
+	protected:
+		virtual void onNextStep() {
+
 		}
 
 	private:
