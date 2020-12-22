@@ -60,9 +60,12 @@ begin
     end
     else
     begin
-        r_active <= 1;
-        r_tx_bit_index <= r_tx_bit_index - 1;
-        r_tx_cipo <= r_tx_byte[r_tx_bit_index];
+        if (i_spi_cs_n == 1'b0)
+        begin
+            r_active <= 1;
+            r_tx_bit_index <= r_tx_bit_index - 1;
+            r_tx_cipo <= r_tx_byte[r_tx_bit_index];
+        end
     end
 end
 
@@ -76,19 +79,22 @@ begin
     end
     else
     begin
-        r_rx_bit_index <= r_rx_bit_index - 1;
-        r_rx_byte[r_rx_bit_index] <= i_spi_copi;
+        if (i_spi_cs_n == 1'b0)
+        begin
+            r_rx_bit_index <= r_rx_bit_index - 1;
+            r_rx_byte[r_rx_bit_index] <= i_spi_copi;
 
-        if (r_rx_bit_index == 0)
-        begin
-            // start process of RX crossing to 
-            // FPGA clock domain
-            r_rx_buffered_0 <= 1;
-        end
-        else if (r_rx_bit_index == 1)
-        begin
-            // clear the buffered signal in preparation for  
-            r_rx_buffered_0 <= 0;
+            if (r_rx_bit_index == 0)
+            begin
+                // start process of RX crossing to 
+                // FPGA clock domain
+                r_rx_buffered_0 <= 1;
+            end
+            else if (r_rx_bit_index == 1)
+            begin
+                // clear the buffered signal in preparation for  
+                r_rx_buffered_0 <= 0;
+            end
         end
     end
 end
@@ -117,7 +123,7 @@ begin
     end
 end
 
-assign o_rx_byte = r_rx_dv ? r_rx_byte : 0;
+assign o_rx_byte = o_rx_dv ? r_rx_byte : 0;
 assign o_rx_dv = r_rx_dv;
 assign o_spi_cipo = r_active ? r_tx_cipo : 0;
 

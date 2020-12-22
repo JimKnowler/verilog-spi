@@ -315,13 +315,40 @@ TEST_F(SPIPeripheral, ShouldSendAndReceiveMultipleBytes) {
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedReceiveTrace + expectedReceivedTrace));
 }
 
-// send / receive multiple bytes
-// - should user have to specify send byte every time? or should it default to 0?
+TEST_F(SPIPeripheral, ShouldObserveChipSelect) {
+    // deactivate chip select (inactive high)
+    testBench.core().i_spi_cs_n = 1;
 
-// should ignore i_spi_clk when cs is high
+    // simulate sending second byte
+    helperSetupSendByte(0x55);
+    helperSimulateReceiveByte(0xAA);
+
+    const Trace expectedReceiveTrace = TraceBuilder()
+        .port(i_clk).signal( "1010" )
+        .port(o_rx_dv).signal( "0000" )
+        .port(o_rx_byte).signal( {0,0,0,0})
+        .port(i_spi_clk).signal( "1100")
+        .port(i_spi_cs_n).signal( "1111" )
+        .port(o_spi_cipo).signal( "0000" )
+        .allPorts().repeat(8)
+        .port(i_spi_copi).signal( "11110000" ).repeat(4);
+        
+    // receive o_rx_dv & o_rx_byte
+    testBench.tick(3);
+    
+    const Trace expectedReceivedTrace = TraceBuilder()
+        .port(i_clk).signal( "101010" )
+        .port(o_rx_dv).signal( "000000" ) 
+        .port(o_rx_byte).signal( {0,0,0}).repeatEachStep(2)
+        .port(i_spi_clk).signal( "000000")
+        .port(i_spi_cs_n).signal( "111111" )
+        .port(o_spi_cipo).signal( "000000" )
+        .port(i_spi_copi).signal( "000000" );
+    
+    EXPECT_THAT(testBench.trace, MatchesTrace(expectedReceiveTrace + expectedReceivedTrace));
+}
+
 // should disconnect o_spi_cipo when cs is high
-
-// send/receive high order bit first
 
 // receive on falling edge
 
