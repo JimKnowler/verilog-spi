@@ -14,6 +14,16 @@ Test Driven Implementation of Serial Peripheral Interface (SPI) protocol in Veri
 - [Bazel](https://docs.bazel.build/versions/3.7.0/install.html)
 
 
+# Features
+
+- Verilog SPI Controller
+
+- Verilog SPI Peripheral
+
+- SPI MODE 1
+  - CPOL = 0 (clock polarity - IDLE at 0)
+  - CPHA = 1 (clock phase - signal on COPI and CIPO change on rising edge, and are sampled on falling edge)
+
 # Build & Run Unit Tests for SPI Verilog
 
 While standing in project's root directory, use Bazel to build the test target:

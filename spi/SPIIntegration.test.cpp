@@ -28,6 +28,8 @@ namespace {
             testBenchController.trace.clear();
         }
 
+        /// @brief simulate controller + peripheral with their
+        ///        spi_clk, cpi_copi and spi_cipo ports connected
         void tick(uint32_t numTicks) {
             for (uint32_t i=0; i<numTicks; i++) {
                 auto& controller = testBenchController.core();
