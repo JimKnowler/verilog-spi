@@ -4,6 +4,7 @@ namespace gtestverilog {
 namespace matches_trace {
 
     bool compare(const Trace& actual, const Trace& expected, ::testing::MatchResultListener& listener) {
+        bool hasMatched = true;
 
         auto& stepsActual = actual.getSteps();
         auto& stepsExpected = expected.getSteps();
@@ -36,7 +37,7 @@ namespace matches_trace {
 
                 if (valueActual != valueExpected) {
                     if (listener.IsInterested()) {
-                        listener << "unexpected signal on " 
+                        listener << "\nunexpected signal on " 
                                 << ConsoleColour().fg(Trace::getColourForPortId(portId))
                                 << portDesc.label()
                                 << ConsoleColour().reset()
@@ -56,13 +57,15 @@ namespace matches_trace {
                         Trace::renderPort(*(listener.stream()), maxPortLabelSize, portDesc, stepsActual);
                     }
 
-                    return false;
+                    hasMatched = false;
+
+                    break;
                 }
                 
             }
         }
 
-        return true;
+        return hasMatched;
     }
     
 } // matches_trace
