@@ -54,6 +54,8 @@ TEST_F(SPIIntegration, ShouldConstructFixture) {
 }
 
 TEST_F(SPIIntegration, ShouldSendAndReceiveOneByte) {
+    const uint32_t kNumClksPerSpiClk = 2;               // todo: test with controllers with different PARAM values for SPI CLK length
+    
     Helpers::peripheralSetupSendByte(testBenchPeripheral, 0xAA);
     Helpers::controllerSetupSendByte(testBenchController, 0x55);
 
@@ -61,7 +63,6 @@ TEST_F(SPIIntegration, ShouldSendAndReceiveOneByte) {
     testBenchPeripheral.core().i_spi_cs_n = 0;
 
     // simulate the communication
-    const uint32_t kNumClksPerSpiClk = 2;               // todo: test with controllers with different PARAM values for SPI CLK length
     tick(8 * kNumClksPerSpiClk);
 
     // check controller received data
@@ -73,8 +74,36 @@ TEST_F(SPIIntegration, ShouldSendAndReceiveOneByte) {
     EXPECT_EQ(testBenchPeripheral.core().o_rx_byte, 0x55);
 }
 
-#if 0
 TEST_F(SPIIntegration, ShouldSendAndReceiveMultipleBytes) {
+    const uint32_t kNumClksPerSpiClk = 2;               // todo: test with controllers with different PARAM values for SPI CLK length
 
+    ////////////////////////////////////////
+    // 1st byte
+    
+    Helpers::peripheralSetupSendByte(testBenchPeripheral, 0xAA);
+    Helpers::controllerSetupSendByte(testBenchController, 0x55);
+
+    // activate chip select
+    testBenchPeripheral.core().i_spi_cs_n = 0;
+
+    // simulate the communication
+    tick(8 * kNumClksPerSpiClk);
+
+    ////////////////////////////////////////
+    // 2nd byte
+
+    Helpers::peripheralSetupSendByte(testBenchPeripheral, 0x42);
+    Helpers::controllerSetupSendByte(testBenchController, 0xDA);
+    
+    // simulate the communication
+    tick(8 * kNumClksPerSpiClk);
+
+    // check controller received data
+    tick(1);
+    EXPECT_EQ(testBenchController.core().o_rx_byte, 0x42);
+
+    // check peripheral received data
+    tick(1);
+    EXPECT_EQ(testBenchPeripheral.core().o_rx_byte, 0xDA);
 }
-#endif
+
