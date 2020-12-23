@@ -63,17 +63,12 @@ Preferring use of [CONTROLLER and PERIPHERAL](https://www.sparkfun.com/spi_signa
 
 # TODO
 
-- support generation of C++ test framework code from verilog/verilator output
-- add option for generating traces from tests
-  - command line option?
-  - TestBench generates a trace for each test + writes after every tick?
-  - see https://zipcpu.com/blog/2017/06/21/looking-at-verilator.html for examples
-- write SPIController with tests
-- write SPIPeripheral with tests
-- write integration tests for SPIController + SPIPeripheral
-- support testing all 4 SPI modes by using verilator arg at verilation time, such as '-GSPI_MODE=3' 
+- support all 4 SPI modes by using verilator arg at verilation time, such as '-GSPI_MODE=3' 
    - generate 4 versions of SPIController and SPIPeripheral
    - run unit tests on each version
-- support testing different clock speeds on SPIController by using verilator arg at verilation time, such as '-GCLKS_PER_HALF_BIT=3'
+     - can we parameterise the same set of sets?
+
+- support different SPI clock speeds on SPIController by using verilator arg at verilation time, such as '-GCLKS_PER_HALF_BIT=3'
    - generate multiple versions of SPIController
    - run unit tests on each version
+     - can we parameterise the same set of sets?
