@@ -61,7 +61,8 @@ TEST_F(SPIIntegration, ShouldSendAndReceiveOneByte) {
     testBenchPeripheral.core().i_spi_cs_n = 0;
 
     // simulate the communication
-    tick(8 * 2);
+    const kNumClksPerSpiClk = 4;                        // todo: use Controller with matching PARAM value
+    tick(8 * kNumClksPerSpiClk);
 
     // check controller received data
     tick(1);
