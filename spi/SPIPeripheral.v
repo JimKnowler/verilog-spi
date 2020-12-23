@@ -1,3 +1,19 @@
+/*
+ * SPIPeripheral
+ *
+ * SPI (Serial Peripheral Interface) Peripheral.
+ * 
+ * Receive a byte from an SPI Controller, while sending a byte
+ * response at the same time.
+ *
+ * Based on https://github.com/nandland/spi-slave 
+ *
+ * NOTE: FPGA clock speed needs to be 4 x SPI clock frequency.
+ *
+ * NOTE: when using this module, the output pin connected to 
+ *       o_spi_cipo should be disconnected (i.e. 1'bZ) when
+ *       chip select (i_spi_cs_n) is inactive (high).
+ */
 module SPIPeripheral (
     input           i_clk,
     input           i_reset,
@@ -14,10 +30,7 @@ module SPIPeripheral (
     input           i_spi_clk,      // SPI CLK: clock signal from controller
     output          o_spi_cipo,     // SPI CIPO: tri-state: high-z when cs is positive
     input           i_spi_copi,     // SPI CPOI: only process when cs is negative
-
-    /* verilator lint_off UNUSED */
     input           i_spi_cs_n      // chip select (active low)
-    /* verilator lint_on UNUSED */
 );
 
 reg [2:0] r_rx_bit_index;

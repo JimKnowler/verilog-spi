@@ -348,9 +348,10 @@ TEST_F(SPIPeripheral, ShouldObserveChipSelect) {
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedReceiveTrace + expectedReceivedTrace));
 }
 
-// todo: externally - should disconnect o_spi_cipo (z) when cs is high
 
 // todo: should receive on falling edge
+
+// todo: signal immediately on CIPO when CS goes low?
 
 // TODO: parameterised MODE
 //       -> via parameter to verilog module
