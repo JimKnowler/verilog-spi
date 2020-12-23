@@ -10,6 +10,8 @@ using namespace gtestverilog;
 #include "spi/SPIPeripheralTestBench.h"
 using namespace spiperipheraltestbench;
 
+#include "Helpers.h"
+
 namespace {
     class SPIPeripheral : public ::testing::Test {
     public:
@@ -18,55 +20,6 @@ namespace {
 
             testBench.reset();
             testBench.trace.clear();
-        }
-
-        /// @todo add SPIControllerTestBench arg + move to helpers file
-        void helperSetupSendByte(uint8_t byte) {
-            auto& core = testBench.core();
-            
-            // start sending by pulsing command lines
-            core.i_tx_dv = 1;
-            core.i_tx_byte = byte;
-            testBench.tick();
-            
-            // reset trace, so we only capture signals during the transmission
-            testBench.trace.clear();
-
-            // send in progress, clear the external inputs
-            core.i_tx_dv = 0;
-            core.i_tx_byte = 0;
-        }
-
-        /// @todo move to helpers file
-        void helperSimulateReceiveByte(uint8_t byte, uint32_t numStepsSetup = 0, uint32_t numStepsValid = 4, uint32_t numStepsPadding = 0) {
-            auto& core = testBench.core();
-
-            for (uint32_t index = 0; index < 8; index++) {
-                uint32_t cumulativeSteps = 0;
-                
-                core.i_spi_copi = 0;
-
-                for (uint32_t i=0; i<numStepsSetup; i++) {
-                    core.i_spi_clk = (cumulativeSteps < 2);
-                    testBench.nextStep();
-                    cumulativeSteps += 1;
-                }
-
-                core.i_spi_copi = (byte >> (7-index)) & 0x1;                
-                for (uint32_t i=0; i<numStepsValid; i++) {
-                    core.i_spi_clk = (cumulativeSteps < 2);
-                    testBench.nextStep();
-                    cumulativeSteps += 1;
-                }
-
-                core.i_spi_copi = 0;
-                
-                for (uint32_t i=0; i<numStepsPadding; i++) {
-                    core.i_spi_clk = (cumulativeSteps < 2);
-                    testBench.nextStep();
-                    cumulativeSteps += 1;
-                }
-            }
         }
 
         SPIPeripheralTestBench testBench;
@@ -110,11 +63,11 @@ TEST_F(SPIPeripheral, ShouldSetupSend) {
 }
 
 TEST_F(SPIPeripheral, ShouldSendByte0xFF) { 
-    helperSetupSendByte(0xFF);
+    Helpers::peripheralSetupSendByte(testBench, 0xFF);
     
     testBench.core().i_spi_cs_n = 0;
     
-    helperSimulateReceiveByte(0);
+    Helpers::peripheralSimulateReceiveByte(testBench, 0);
     
     const Trace expectedTrace = TraceBuilder()
         .port(i_clk).signal( "1010" )
@@ -129,11 +82,11 @@ TEST_F(SPIPeripheral, ShouldSendByte0xFF) {
 }
 
 TEST_F(SPIPeripheral, ShouldSendByte0xAA) { 
-    helperSetupSendByte(0xAA);                      // 0xAA => 0b10101010
+    Helpers::peripheralSetupSendByte(testBench, 0xAA);                      // 0xAA => 0b10101010
 
     testBench.core().i_spi_cs_n = 0;
     
-    helperSimulateReceiveByte(0);
+    Helpers::peripheralSimulateReceiveByte(testBench, 0);
     
     const Trace expectedTrace = TraceBuilder()
         .port(i_clk).signal( "1010" )
@@ -148,11 +101,11 @@ TEST_F(SPIPeripheral, ShouldSendByte0xAA) {
 }
 
 TEST_F(SPIPeripheral, ShouldSendByte0x55) { 
-    helperSetupSendByte(0x55);                      // 0x55 => 0b01010101       
+    Helpers::peripheralSetupSendByte(testBench, 0x55);
 
     testBench.core().i_spi_cs_n = 0;
 
-    helperSimulateReceiveByte(0);
+    Helpers::peripheralSimulateReceiveByte(testBench, 0);
     
     const Trace expectedTrace = TraceBuilder()
         .port(i_clk).signal( "1010" )
@@ -167,11 +120,11 @@ TEST_F(SPIPeripheral, ShouldSendByte0x55) {
 }
 
 TEST_F(SPIPeripheral, ShouldReceiveByte0xAA) {
-    helperSetupSendByte(0); 
+    Helpers::peripheralSetupSendByte(testBench, 0); 
 
     testBench.core().i_spi_cs_n = 0;
     
-    helperSimulateReceiveByte(0xAA);            // 0xAA => 0b10101010
+    Helpers::peripheralSimulateReceiveByte(testBench, 0xAA);
 
     const Trace expectedReceiveTrace = TraceBuilder()
         .port(i_clk).signal( "1010" )
@@ -200,11 +153,11 @@ TEST_F(SPIPeripheral, ShouldReceiveByte0xAA) {
 }
 
 TEST_F(SPIPeripheral, ShouldReceiveByte0x55) {
-    helperSetupSendByte(0); 
+    Helpers::peripheralSetupSendByte(testBench, 0); 
 
     testBench.core().i_spi_cs_n = 0;
     
-    helperSimulateReceiveByte(0x55);            // 0x55 => 0b01010101
+    Helpers::peripheralSimulateReceiveByte(testBench, 0x55);            // 0x55 => 0b01010101
 
     const Trace expectedReceiveTrace = TraceBuilder()
         .port(i_clk).signal( "1010" )
@@ -232,11 +185,11 @@ TEST_F(SPIPeripheral, ShouldReceiveByte0x55) {
 }
 
 TEST_F(SPIPeripheral, ShouldReceiveByteOnFallingEdge) {
-    helperSetupSendByte(0); 
+    Helpers::peripheralSetupSendByte(testBench, 0); 
 
     testBench.core().i_spi_cs_n = 0;
     
-    helperSimulateReceiveByte(0xAA, 1, 2, 1);
+    Helpers::peripheralSimulateReceiveByte(testBench, 0xAA, 1, 2, 1);
 
     const Trace expectedReceiveTrace = TraceBuilder()
         .port(i_clk).signal( "1010" )
@@ -265,11 +218,11 @@ TEST_F(SPIPeripheral, ShouldReceiveByteOnFallingEdge) {
 }
 
 TEST_F(SPIPeripheral, ShouldSend_0xAA_AndReceive_0x55) {
-    helperSetupSendByte(0xAA); 
+    Helpers::peripheralSetupSendByte(testBench, 0xAA); 
 
     testBench.core().i_spi_cs_n = 0;
     
-    helperSimulateReceiveByte(0x55);
+    Helpers::peripheralSimulateReceiveByte(testBench, 0x55);
 
     const Trace expectedReceiveTrace = TraceBuilder()
         .port(i_clk).signal( "1010" )
@@ -297,11 +250,11 @@ TEST_F(SPIPeripheral, ShouldSend_0xAA_AndReceive_0x55) {
 }
 
 TEST_F(SPIPeripheral, ShouldSend_0x55_AndReceive_0xAA) {
-    helperSetupSendByte(0x55); 
+    Helpers::peripheralSetupSendByte(testBench, 0x55); 
 
     testBench.core().i_spi_cs_n = 0;
     
-    helperSimulateReceiveByte(0xAA);
+    Helpers::peripheralSimulateReceiveByte(testBench, 0xAA);
 
     const Trace expectedReceiveTrace = TraceBuilder()
         .port(i_clk).signal( "1010" )
@@ -330,15 +283,15 @@ TEST_F(SPIPeripheral, ShouldSend_0x55_AndReceive_0xAA) {
 
 TEST_F(SPIPeripheral, ShouldSendAndReceiveMultipleBytes) {
     // simulate sending first byte
-    helperSetupSendByte(0x12);    
+    Helpers::peripheralSetupSendByte(testBench, 0x12);    
     testBench.core().i_spi_cs_n = 0;                  
-    helperSimulateReceiveByte(0x34);
+    Helpers::peripheralSimulateReceiveByte(testBench, 0x34);
     testBench.tick(3);
     testBench.trace.clear();
 
     // simulate sending second byte
-    helperSetupSendByte(0x55);
-    helperSimulateReceiveByte(0xAA);
+    Helpers::peripheralSetupSendByte(testBench, 0x55);
+    Helpers::peripheralSimulateReceiveByte(testBench, 0xAA);
 
     const Trace expectedReceiveTrace = TraceBuilder()
         .port(i_clk).signal( "1010" )
@@ -370,8 +323,8 @@ TEST_F(SPIPeripheral, ShouldObserveChipSelect) {
     testBench.core().i_spi_cs_n = 1;
 
     // simulate sending second byte
-    helperSetupSendByte(0x55);
-    helperSimulateReceiveByte(0xAA);
+    Helpers::peripheralSetupSendByte(testBench, 0x55);
+    Helpers::peripheralSimulateReceiveByte(testBench, 0xAA);
 
     const Trace expectedReceiveTrace = TraceBuilder()
         .port(i_clk).signal( "1010" )

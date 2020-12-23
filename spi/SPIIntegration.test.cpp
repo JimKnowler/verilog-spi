@@ -13,6 +13,8 @@ using namespace spiperipheraltestbench;
 #include "spi/SPIControllerTestBench.h"
 using namespace spicontrollertestbench;
 
+#include "Helpers.h"
+
 namespace {
     class SPIIntegration : public ::testing::Test {
     public:
@@ -24,38 +26,6 @@ namespace {
 
             testBenchController.reset();
             testBenchController.trace.clear();
-        }
-
-        void helperControllerSetupSendByte(uint8_t byte) {
-            auto& core = testBenchController.core();
-            
-            // start sending by pulsing command lines
-            core.i_tx_dv = 1;
-            core.i_tx_byte = byte;
-            testBenchController.tick();
-            
-            // reset trace, so we only capture signals during the transmission
-            testBenchController.trace.clear();
-
-            // send in progress, clear the external inputs
-            core.i_tx_dv = 0;
-            core.i_tx_byte = 0;
-        }
-
-        void helperPeripheralSetupSendByte(uint8_t byte) {
-            auto& core = testBenchPeripheral.core();
-            
-            // start sending by pulsing command lines
-            core.i_tx_dv = 1;
-            core.i_tx_byte = byte;
-            testBenchPeripheral.tick();
-            
-            // reset trace, so we only capture signals during the transmission
-            testBenchPeripheral.trace.clear();
-
-            // send in progress, clear the external inputs
-            core.i_tx_dv = 0;
-            core.i_tx_byte = 0;
         }
 
         void tick(uint32_t numTicks) {
@@ -84,8 +54,8 @@ TEST_F(SPIIntegration, ShouldConstructFixture) {
 }
 
 TEST_F(SPIIntegration, ShouldSendAndReceiveOneByte) {
-    helperPeripheralSetupSendByte(0xAA);
-    helperControllerSetupSendByte(0x55);
+    Helpers::peripheralSetupSendByte(testBenchPeripheral, 0xAA);
+    Helpers::controllerSetupSendByte(testBenchController, 0x55);
 
     // activate chip select
     testBenchPeripheral.core().i_spi_cs_n = 0;
