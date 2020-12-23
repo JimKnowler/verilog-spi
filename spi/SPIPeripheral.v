@@ -30,13 +30,16 @@ module SPIPeripheral (
     input           i_spi_clk,      // SPI CLK: clock signal from controller
     output          o_spi_cipo,     // SPI CIPO: tri-state: high-z when cs is positive
     input           i_spi_copi,     // SPI CPOI: only process when cs is negative
-    input           i_spi_cs_n      // chip select (active low)
+    input           i_spi_cs_n,      // chip select (active low)
+
+    // temp: while debugging
+    output reg [7:0] r_rx_byte
 );
 
 reg [2:0] r_rx_bit_index;
 reg [7:0] r_tx_byte;
 reg r_rx_dv;
-reg [7:0] r_rx_byte;
+
 reg r_rx_buffered_0;
 reg r_rx_buffered_1;
 reg r_rx_buffered_2;

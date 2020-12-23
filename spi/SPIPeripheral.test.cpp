@@ -36,20 +36,35 @@ namespace {
             core.i_tx_byte = 0;
         }
 
-        void helperSimulateReceiveByte(uint8_t byte) {
+        void helperSimulateReceiveByte(uint8_t byte, uint32_t numStepsSetup = 0, uint32_t numStepsValid = 4, uint32_t numStepsPadding = 0) {
             auto& core = testBench.core();
 
-            for (size_t index = 0; index<8; index++) {
-                core.i_spi_copi = (byte >> (7-index)) & 0x1;
+            for (uint32_t index = 0; index < 8; index++) {
+                uint32_t cumulativeSteps = 0;
+                
+                core.i_spi_copi = 0;
 
-                core.i_spi_clk = 1;
-                testBench.tick();
+                for (uint32_t i=0; i<numStepsSetup; i++) {
+                    core.i_spi_clk = (cumulativeSteps < 2);
+                    testBench.nextStep();
+                    cumulativeSteps += 1;
+                }
 
-                core.i_spi_clk = 0;
-                testBench.tick();
+                core.i_spi_copi = (byte >> (7-index)) & 0x1;                
+                for (uint32_t i=0; i<numStepsValid; i++) {
+                    core.i_spi_clk = (cumulativeSteps < 2);
+                    testBench.nextStep();
+                    cumulativeSteps += 1;
+                }
+
+                core.i_spi_copi = 0;
+                
+                for (uint32_t i=0; i<numStepsPadding; i++) {
+                    core.i_spi_clk = (cumulativeSteps < 2);
+                    testBench.nextStep();
+                    cumulativeSteps += 1;
+                }
             }
-
-            core.i_spi_copi = 0;
         }
 
         SPIPeripheralTestBench testBench;
@@ -214,6 +229,39 @@ TEST_F(SPIPeripheral, ShouldReceiveByte0x55) {
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedReceiveTrace + expectedReceivedTrace));
 }
 
+TEST_F(SPIPeripheral, ShouldReceiveByteOnFallingEdge) {
+    helperSetupSendByte(0); 
+
+    testBench.core().i_spi_cs_n = 0;
+    
+    helperSimulateReceiveByte(0xAA, 1, 2, 1);
+
+    const Trace expectedReceiveTrace = TraceBuilder()
+        .port(i_clk).signal( "1010" )
+        .port(o_rx_dv).signal( "0000" )
+        .port(o_rx_byte).signal( {0,0,0,0})
+        .port(i_spi_clk).signal( "1100")
+        .port(i_spi_cs_n).signal( "0000" )
+        .port(o_spi_cipo).signal( "0000" )
+        .allPorts().repeat(8)
+        .port(i_spi_copi).signal( "01100000" ).repeat(4);
+
+
+    // receive o_rx_dv & o_rx_byte
+    testBench.tick(3);
+    
+    const Trace expectedReceivedTrace = TraceBuilder()
+        .port(i_clk).signal( "101010" )
+        .port(o_rx_dv).signal( "001100" ) 
+        .port(o_rx_byte).signal( {0,0xAA,0}).repeatEachStep(2)
+        .port(i_spi_clk).signal( "000000")
+        .port(i_spi_cs_n).signal( "000000" )
+        .port(o_spi_cipo).signal( "000000" )
+        .port(i_spi_copi).signal( "000000" );
+    
+    EXPECT_THAT(testBench.trace, MatchesTrace(expectedReceiveTrace + expectedReceivedTrace));
+}
+
 TEST_F(SPIPeripheral, ShouldSend_0xAA_AndReceive_0x55) {
     helperSetupSendByte(0xAA); 
 
@@ -347,9 +395,6 @@ TEST_F(SPIPeripheral, ShouldObserveChipSelect) {
     
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedReceiveTrace + expectedReceivedTrace));
 }
-
-
-// todo: should receive on falling edge
 
 // todo: signal immediately on CIPO when CS goes low?
 
