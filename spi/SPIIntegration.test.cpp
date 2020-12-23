@@ -61,7 +61,7 @@ TEST_F(SPIIntegration, ShouldSendAndReceiveOneByte) {
     testBenchPeripheral.core().i_spi_cs_n = 0;
 
     // simulate the communication
-    const kNumClksPerSpiClk = 4;                        // todo: use Controller with matching PARAM value
+    const uint32_t kNumClksPerSpiClk = 2;               // todo: test with controllers with different PARAM values for SPI CLK length
     tick(8 * kNumClksPerSpiClk);
 
     // check controller received data
@@ -69,16 +69,8 @@ TEST_F(SPIIntegration, ShouldSendAndReceiveOneByte) {
     EXPECT_EQ(testBenchController.core().o_rx_byte, 0xAA);
 
     // check peripheral received data
-    tick(2);
-    EXPECT_EQ(testBenchPeripheral.core().o_rx_byte, 0x55);
-
-    // debugging
-    printf("debugging info\n");
     tick(1);
-    printf("controller\n");
-    std::cout << testBenchController.trace;
-    printf("peripheral\n");
-    std::cout << testBenchPeripheral.trace;
+    EXPECT_EQ(testBenchPeripheral.core().o_rx_byte, 0x55);
 }
 
 #if 0
