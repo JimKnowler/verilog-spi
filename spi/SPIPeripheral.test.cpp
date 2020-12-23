@@ -20,7 +20,8 @@ namespace {
             testBench.trace.clear();
         }
 
-         void helperSetupSendByte(uint8_t byte) {
+        /// @todo add SPIControllerTestBench arg + move to helpers file
+        void helperSetupSendByte(uint8_t byte) {
             auto& core = testBench.core();
             
             // start sending by pulsing command lines
@@ -36,6 +37,7 @@ namespace {
             core.i_tx_byte = 0;
         }
 
+        /// @todo move to helpers file
         void helperSimulateReceiveByte(uint8_t byte, uint32_t numStepsSetup = 0, uint32_t numStepsValid = 4, uint32_t numStepsPadding = 0) {
             auto& core = testBench.core();
 
