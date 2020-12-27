@@ -1,7 +1,7 @@
 module SPIController
 (
     input i_clk,
-    input i_reset,
+    input i_reset_n,
 
     // TX (COPI) Signals
     input [7:0]  i_tx_byte,         // Byte to transmit via COPI
@@ -31,10 +31,10 @@ reg [2:0] r_rx_bit_count;           // track the current bit that is being recei
 reg r_is_busy;                      // set to 1 while busy sending/receiving
 
 // generate SPI clock correct number of times when DV pulse comes
-always @(posedge i_clk or posedge i_reset)
+always @(posedge i_clk or negedge i_reset_n)
 begin
     
-    if (i_reset)
+    if (!i_reset_n)
     begin
         r_tx_ready <= 1'b0;
         r_spi_clk <= 1'b0;             // default to IDLE state
@@ -78,9 +78,9 @@ begin
 end
 
 // register r_tx_byte when i_tx_dv is pulsed
-always @(posedge i_clk or posedge i_reset) 
+always @(posedge i_clk or negedge i_reset_n) 
 begin
-    if (i_reset)
+    if (!i_reset_n)
     begin
         r_tx_byte <= 8'h00;
     end
@@ -95,9 +95,9 @@ begin
 end 
 
 // generate COPI data
-always @(posedge o_spi_clk or posedge i_reset) 
+always @(posedge o_spi_clk or negedge i_reset_n) 
 begin
-    if (i_reset)
+    if (!i_reset_n)
     begin
         r_spi_copi <= 1'b0;
         r_tx_bit_count <= 3'b111;       // send most significant bit first (bit 7)
@@ -110,9 +110,9 @@ begin
 end
 
 // capture CIPO data
-always @(negedge o_spi_clk or posedge i_reset) 
+always @(negedge o_spi_clk or negedge i_reset_n) 
 begin
-    if (i_reset)
+    if (!i_reset_n)
     begin
         r_rx_bit_count <= 3'b111;       // receive most significant bit first (bit 7)
         r_rx_byte <= 8'h00;

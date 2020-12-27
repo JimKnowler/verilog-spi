@@ -16,7 +16,8 @@ namespace gtestverilog {
 			m_core = std::make_unique<MODULE>();
 			
 			m_stepCount = 0;
-
+			
+			m_core->i_reset_n = 1;
 			m_core->i_clk = 0;
 			m_core->eval();
 		}
@@ -25,11 +26,11 @@ namespace gtestverilog {
 			m_core.release();
 		}
 
-		/// @brief set the 'i_reset' port high and simulate a tick
+		/// @brief set the 'i_reset_n' port low and simulate a clock tick
 		void reset(void) {
-			m_core->i_reset = 1;
+			m_core->i_reset_n = 0;
 			tick();
-			m_core->i_reset = 0;
+			m_core->i_reset_n = 1;
 		}
 
 		/// @brief simulate a clock cycle

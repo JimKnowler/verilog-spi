@@ -16,7 +16,7 @@
  */
 module SPIPeripheral (
     input           i_clk,
-    input           i_reset,
+    input           i_reset_n,
 
     // receive data
     output [7:0]    o_rx_byte,      // received data
@@ -47,9 +47,9 @@ reg [2:0] r_tx_bit_index;  // index into byte being serialised
 reg r_tx_cipo;             // current bit being serialised to controller
 
 // FPGA Clock domain - receive tx_byte when i_tx_dv is pulsed
-always @(posedge i_clk or posedge i_reset)
+always @(posedge i_clk or negedge i_reset_n)
 begin
-    if (i_reset)
+    if (!i_reset_n)
     begin
         r_tx_byte <= 8'h00;
     end
@@ -63,9 +63,9 @@ begin
 end
 
 // SPI clock domain - send serialised data on CIPO
-always @(posedge i_spi_clk or posedge i_reset)
+always @(posedge i_spi_clk or negedge i_reset_n)
 begin
-    if (i_reset)
+    if (!i_reset_n)
     begin
         r_active <= 0;
         r_tx_bit_index <= 3'b111;
@@ -83,9 +83,9 @@ begin
 end
 
 // SPI clock domain - read serialised data from COPI
-always @(negedge i_spi_clk or posedge i_reset)
+always @(negedge i_spi_clk or negedge i_reset_n)
 begin
-    if (i_reset)
+    if (!i_reset_n)
     begin
         r_rx_bit_index <= 3'b111;
         r_rx_byte <= 8'h00;
@@ -113,9 +113,9 @@ begin
 end
 
 // FPGA clock domain - receive RX from spi_clk domain
-always @(posedge i_clk or posedge i_reset)
+always @(posedge i_clk or negedge i_reset_n)
 begin
-    if (i_reset)
+    if (!i_reset_n)
     begin
         r_rx_dv <= 0;
     end

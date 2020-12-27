@@ -12,7 +12,7 @@ namespace {
         }
 
         uint8_t i_clk;
-        uint8_t i_reset;
+        uint8_t i_reset_n;
     };
 }
 

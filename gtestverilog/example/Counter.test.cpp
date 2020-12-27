@@ -34,7 +34,7 @@ TEST_F(Counter, ShouldIncrement) {
     testBench.tick();
 
     const Trace traceExpected = TraceBuilder()
-        .port(i_reset).signal( "10").repeatEachStep(2)
+        .port(i_reset_n).signal( "01").repeatEachStep(2)
         .port(i_clk).signal( "10" ).repeat(2)
         .port(o_value).signal( {0, 1} ).repeatEachStep(2);
 
@@ -46,7 +46,7 @@ TEST_F(Counter, ShouldIncrementRepeatedly) {
     testBench.tick(10);
 
     const Trace traceExpected = TraceBuilder()
-        .port(i_reset).signal( "10000000000").repeatEachStep(2)
+        .port(i_reset_n).signal( "01111111111").repeatEachStep(2)
         .port(i_clk).signal( "10" ).repeat(11)
         .port(o_value).signal( {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10} ).repeatEachStep(2);
 
