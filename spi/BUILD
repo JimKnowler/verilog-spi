@@ -1,5 +1,5 @@
 load("@rules_verilator//verilator:defs.bzl", "verilator_cc_library")
-load("//gtestverilog:defs.bzl", "gtest_verilog_testbench")
+load("@gtestverilog//gtestverilog:defs.bzl", "gtest_verilog_testbench")
 
 verilator_cc_library(
     name = "SPIController",
@@ -34,7 +34,7 @@ cc_test(
     ],
     deps = [
         "@com_google_googletest//:gtest",
-        "//gtestverilog:lib",
+        "@gtestverilog//gtestverilog:lib",
         ":SPIController",
         ":SPIPeripheral"
     ],

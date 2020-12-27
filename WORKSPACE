@@ -23,6 +23,12 @@ http_archive(
     url = "https://github.com/kkiningh/rules_verilator/archive/v0.1-rc4.zip",
 )
 
+http_archive(
+    name = "gtestverilog",
+    strip_prefix = "gtestverilog-0.1-rc2",
+    url="https://github.com/JimKnowler/gtestverilog/archive/v0.1-rc2.zip"
+)
+
 load(
     "@rules_verilator//verilator:repositories.bzl",
     "rules_verilator_dependencies",
