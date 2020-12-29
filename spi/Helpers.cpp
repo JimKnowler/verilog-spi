@@ -33,18 +33,18 @@ namespace testing {
         for (uint32_t index = 0; index < 8; index++) {
             core.i_spi_cipo = 0;
             for (uint32_t i=0; i<numStepsSetup; i++) {
-                testBench.nextStep();
+                testBench.step();
             }
 
             core.i_spi_cipo = (byte >> (7-index)) & 0x1;                
             for (uint32_t i=0; i<numStepsValid; i++) {
-                testBench.nextStep();
+                testBench.step();
             }
 
             core.i_spi_cipo = 0;
             
             for (uint32_t i=0; i<numStepsPadding; i++) {
-                testBench.nextStep();
+                testBench.step();
             }
         }
     }
@@ -84,14 +84,14 @@ namespace testing {
 
             for (uint32_t i=0; i<numStepsSetup; i++) {
                 core.i_spi_clk = (cumulativeSteps < 2);
-                testBench.nextStep();
+                testBench.step();
                 cumulativeSteps += 1;
             }
 
             core.i_spi_copi = (byte >> (7-index)) & 0x1;                
             for (uint32_t i=0; i<numStepsValid; i++) {
                 core.i_spi_clk = (cumulativeSteps < 2);
-                testBench.nextStep();
+                testBench.step();
                 cumulativeSteps += 1;
             }
 
@@ -99,7 +99,7 @@ namespace testing {
             
             for (uint32_t i=0; i<numStepsPadding; i++) {
                 core.i_spi_clk = (cumulativeSteps < 2);
-                testBench.nextStep();
+                testBench.step();
                 cumulativeSteps += 1;
             }
         }

@@ -39,8 +39,8 @@ namespace {
                     peripheral.i_spi_copi = controller.o_spi_copi;
                     controller.i_spi_cipo = peripheral.o_spi_cipo;
 
-                    testBenchController.nextStep();
-                    testBenchPeripheral.nextStep();
+                    testBenchController.step();
+                    testBenchPeripheral.step();
                 }
             }
         }
