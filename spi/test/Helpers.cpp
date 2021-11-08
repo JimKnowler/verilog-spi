@@ -104,4 +104,49 @@ namespace testing {
             }
         }
     }
+
+    int Helpers::peripheralEchoSimulateReceiveAndSendByte(
+        spiperipheralechotestbench::SPIPeripheralEchoTestBench& testBench,
+        uint8_t byte,
+        uint32_t numStepsSetup,
+        uint32_t numStepsValid,
+        uint32_t numStepsPadding
+    ) {
+        auto& core = testBench.core();
+
+        int tx = 0;
+
+        for (uint32_t index = 0; index < 8; index++) {
+            uint32_t cumulativeSteps = 0;
+            
+            core.i_spi_copi = 0;
+
+            for (uint32_t i=0; i<numStepsSetup; i++) {
+                core.i_spi_clk = (cumulativeSteps < 2);
+                testBench.step();
+                cumulativeSteps += 1;
+            }
+
+            // simulating peripheral receiving a bit
+            core.i_spi_copi = (byte >> (7-index)) & 0x1;                
+            for (uint32_t i=0; i<numStepsValid; i++) {
+                core.i_spi_clk = (cumulativeSteps < 2);
+                testBench.step();
+                cumulativeSteps += 1;
+            }
+
+            // read bit that was being sent back by echo
+            tx |= (core.o_spi_cipo << (7-index));
+
+            core.i_spi_copi = 0;
+            
+            for (uint32_t i=0; i<numStepsPadding; i++) {
+                core.i_spi_clk = (cumulativeSteps < 2);
+                testBench.step();
+                cumulativeSteps += 1;
+            }
+        }
+
+        return tx;
+    }
 }

@@ -21,6 +21,16 @@ gtest_verilog_testbench(
     deps = [":SPIPeripheral"]
 )
 
+verilator_cc_library(
+    name = "SPIPeripheralEcho",
+    srcs = ["SPIPeripheralEcho.v", "SPIPeripheral.v"],
+)
+
+gtest_verilog_testbench(
+    name = "SPIPeripheralEchoTestBench",
+    deps = [":SPIPeripheralEcho"]
+)
+
 cc_test(
     name = "test",
     srcs = glob(
@@ -30,12 +40,14 @@ cc_test(
         ]
     ) + [
         ":SPIControllerTestBench",
-        ":SPIPeripheralTestBench"
+        ":SPIPeripheralTestBench",
+        ":SPIPeripheralEchoTestBench"
     ],
     deps = [
         "@com_google_googletest//:gtest",
         "@gtestverilog//gtestverilog:lib",
         ":SPIController",
-        ":SPIPeripheral"
+        ":SPIPeripheral",
+        ":SPIPeripheralEcho"
     ],
 )

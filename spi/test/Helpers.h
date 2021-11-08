@@ -2,6 +2,7 @@
 
 #include "spi/SPIControllerTestBench.h"
 #include "spi/SPIPeripheralTestBench.h"
+#include "spi/SPIPeripheralEchoTestBench.h"
 
 namespace testing {
 
@@ -29,6 +30,15 @@ namespace testing {
 
         static void peripheralSimulateReceiveByte(
             spiperipheraltestbench::SPIPeripheralTestBench& testBench,
+            uint8_t byte,
+            uint32_t numStepsSetup = 0,
+            uint32_t numStepsValid = 4,
+            uint32_t numStepsPadding = 0
+        );
+
+        // returns value that echo sent in response
+        static int peripheralEchoSimulateReceiveAndSendByte(
+            spiperipheralechotestbench::SPIPeripheralEchoTestBench& testBench,
             uint8_t byte,
             uint32_t numStepsSetup = 0,
             uint32_t numStepsValid = 4,
