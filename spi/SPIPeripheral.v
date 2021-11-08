@@ -20,17 +20,25 @@ module SPIPeripheral (
 
     // receive data
     output [7:0]    o_rx_byte,      // received data
-    output          o_rx_dv,        // pulse high for 1 cycle when byte received
+    output          o_rx_dv,        // data valid - pulse high for 1 cycle when byte received
 
     // transmit data
-    input           i_tx_dv,        // pulse high for 1 cycle to load tx byte
+    input           i_tx_dv,        // data valid - pulse high for 1 cycle to load tx byte
     input [7:0]     i_tx_byte,      // byte to serialise via CIPO
 
     // SPI interface
     input           i_spi_clk,      // SPI CLK: clock signal from controller
-    output          o_spi_cipo,     // SPI CIPO: tri-state: high-z when cs is positive
+    output          o_spi_cipo,     // SPI CIPO: tri-state in top module: high-z when cs is positive
     input           i_spi_copi,     // SPI CPOI: only process when cs is negative
-    input           i_spi_cs_n      // chip select (active low)
+    input           i_spi_cs_n,     // chip select (active low)
+
+    // debug internals
+    output          o_debug_rx_buffered_2,
+    output          o_debug_rx_buffered_1,
+    output          o_debug_rx_buffered_0,
+    output [2:0]    o_debug_rx_bit_index,
+    output [2:0]    o_debug_tx_bit_index,
+    output          o_debug_active
 );
 
 reg [2:0] r_rx_bit_index;
@@ -78,6 +86,8 @@ begin
             r_active <= 1;
             r_tx_bit_index <= r_tx_bit_index - 1;
             r_tx_cipo <= r_tx_byte[r_tx_bit_index];
+
+            // todo: when does active return to 0?
         end
     end
 end
@@ -89,6 +99,7 @@ begin
     begin
         r_rx_bit_index <= 3'b111;
         r_rx_byte <= 8'h00;
+        r_rx_buffered_0 <= 0;
     end
     else
     begin
@@ -105,7 +116,7 @@ begin
             end
             else if (r_rx_bit_index == 1)
             begin
-                // clear the buffered signal in preparation for  
+                // clear the buffered signal in preparation for next rx
                 r_rx_buffered_0 <= 0;
             end
         end
@@ -139,5 +150,13 @@ end
 assign o_rx_byte = o_rx_dv ? r_rx_byte : 0;
 assign o_rx_dv = r_rx_dv;
 assign o_spi_cipo = r_active ? r_tx_cipo : 0;
+
+// debug ports
+assign o_debug_rx_buffered_2 = r_rx_buffered_2;
+assign o_debug_rx_buffered_1 = r_rx_buffered_1;
+assign o_debug_rx_buffered_0 = r_rx_buffered_0;
+assign o_debug_rx_bit_index = r_rx_bit_index;
+assign o_debug_tx_bit_index = r_tx_bit_index;
+assign o_debug_active = r_active;
 
 endmodule

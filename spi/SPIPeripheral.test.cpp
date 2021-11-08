@@ -137,16 +137,16 @@ TEST_F(SPIPeripheral, ShouldReceiveByte0xAA) {
 
 
     // receive o_rx_dv & o_rx_byte
-    testBench.tick(3);
+    testBench.tick(2);
     
     const Trace expectedReceivedTrace = TraceBuilder()
-        .port(i_clk).signal( "101010" )
-        .port(o_rx_dv).signal( "001100" ) 
-        .port(o_rx_byte).signal( {0,0xAA,0}).repeatEachStep(2)
-        .port(i_spi_clk).signal( "000000")
-        .port(i_spi_cs_n).signal( "000000" )
-        .port(o_spi_cipo).signal( "000000" )
-        .port(i_spi_copi).signal( "000000" );
+        .port(i_clk).signal( "1010" )
+        .port(o_rx_dv).signal( "1100" ) 
+        .port(o_rx_byte).signal( {0xAA,0}).repeatEachStep(2)
+        .port(i_spi_clk).signal( "0000")
+        .port(i_spi_cs_n).signal( "0000" )
+        .port(o_spi_cipo).signal( "0000" )
+        .port(i_spi_copi).signal( "0000" );
     
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedReceiveTrace + expectedReceivedTrace));
 }
@@ -169,16 +169,16 @@ TEST_F(SPIPeripheral, ShouldReceiveByte0x55) {
         .port(i_spi_copi).signal( "00001111" ).repeat(4);
     
     // receive o_rx_dv & o_rx_byte
-    testBench.tick(3);
+    testBench.tick(2);
     
     const Trace expectedReceivedTrace = TraceBuilder()
-        .port(i_clk).signal( "101010" )
-        .port(o_rx_dv).signal( "001100" ) 
-        .port(o_rx_byte).signal( {0,0x55,0}).repeatEachStep(2)
-        .port(i_spi_clk).signal( "000000")
-        .port(i_spi_cs_n).signal( "000000" )
-        .port(o_spi_cipo).signal( "000000" )
-        .port(i_spi_copi).signal( "000000" );
+        .port(i_clk).signal( "1010" )
+        .port(o_rx_dv).signal( "1100" ) 
+        .port(o_rx_byte).signal( {0x55,0}).repeatEachStep(2)
+        .port(i_spi_clk).signal( "0000")
+        .port(i_spi_cs_n).signal( "0000" )
+        .port(o_spi_cipo).signal( "0000" )
+        .port(i_spi_copi).signal( "0000" );
     
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedReceiveTrace + expectedReceivedTrace));
 }
@@ -202,16 +202,16 @@ TEST_F(SPIPeripheral, ShouldReceiveByteOnFallingEdge) {
 
 
     // receive o_rx_dv & o_rx_byte
-    testBench.tick(3);
+    testBench.tick(2);
     
     const Trace expectedReceivedTrace = TraceBuilder()
-        .port(i_clk).signal( "101010" )
-        .port(o_rx_dv).signal( "001100" ) 
-        .port(o_rx_byte).signal( {0,0xAA,0}).repeatEachStep(2)
-        .port(i_spi_clk).signal( "000000")
-        .port(i_spi_cs_n).signal( "000000" )
-        .port(o_spi_cipo).signal( "000000" )
-        .port(i_spi_copi).signal( "000000" );
+        .port(i_clk).signal( "1010" )
+        .port(o_rx_dv).signal( "1100" ) 
+        .port(o_rx_byte).signal( {0xAA,0}).repeatEachStep(2)
+        .port(i_spi_clk).signal( "0000")
+        .port(i_spi_cs_n).signal( "0000" )
+        .port(o_spi_cipo).signal( "0000" )
+        .port(i_spi_copi).signal( "0000" );
     
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedReceiveTrace + expectedReceivedTrace));
 }
@@ -234,16 +234,16 @@ TEST_F(SPIPeripheral, ShouldSend_0xAA_AndReceive_0x55) {
         .port(i_spi_copi).signal( "00001111" ).repeat(4);
     
     // receive o_rx_dv & o_rx_byte
-    testBench.tick(3);
+    testBench.tick(2);
     
     const Trace expectedReceivedTrace = TraceBuilder()
-        .port(i_clk).signal( "101010" )
-        .port(o_rx_dv).signal( "001100" ) 
-        .port(o_rx_byte).signal( {0,0x55,0}).repeatEachStep(2)
-        .port(i_spi_clk).signal( "000000")
-        .port(i_spi_cs_n).signal( "000000" )
-        .port(o_spi_cipo).signal( "000000" )
-        .port(i_spi_copi).signal( "000000" );
+        .port(i_clk).signal( "1010" )
+        .port(o_rx_dv).signal( "1100" ) 
+        .port(o_rx_byte).signal( {0x55,0}).repeatEachStep(2)
+        .port(i_spi_clk).signal( "0000")
+        .port(i_spi_cs_n).signal( "0000" )
+        .port(o_spi_cipo).signal( "0000" )
+        .port(i_spi_copi).signal( "0000" );
     
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedReceiveTrace + expectedReceivedTrace));
 }
@@ -266,16 +266,16 @@ TEST_F(SPIPeripheral, ShouldSend_0x55_AndReceive_0xAA) {
         .port(i_spi_copi).signal( "11110000" ).repeat(4);
     
     // receive o_rx_dv & o_rx_byte
-    testBench.tick(3);
+    testBench.tick(2);
     
     const Trace expectedReceivedTrace = TraceBuilder()
-        .port(i_clk).signal( "101010" )
-        .port(o_rx_dv).signal( "001100" ) 
-        .port(o_rx_byte).signal( {0,0xAA,0}).repeatEachStep(2)
-        .port(i_spi_clk).signal( "000000")
-        .port(i_spi_cs_n).signal( "000000" )
-        .port(o_spi_cipo).signal( "111111" )    // note: signal is hi because last bit of 0xAA is hi
-        .port(i_spi_copi).signal( "000000" );
+        .port(i_clk).signal( "1010" )
+        .port(o_rx_dv).signal( "1100" ) 
+        .port(o_rx_byte).signal( {0xAA,0}).repeatEachStep(2)
+        .port(i_spi_clk).signal( "0000")
+        .port(i_spi_cs_n).signal( "0000" )
+        .port(o_spi_cipo).signal( "1111" )    // note: signal is hi because last bit of 0xAA is hi
+        .port(i_spi_copi).signal( "0000" );
     
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedReceiveTrace + expectedReceivedTrace));
 }
@@ -303,16 +303,16 @@ TEST_F(SPIPeripheral, ShouldSendAndReceiveMultipleBytes) {
         .port(i_spi_copi).signal( "11110000" ).repeat(4);
     
     // receive o_rx_dv & o_rx_byte
-    testBench.tick(3);
+    testBench.tick(2);
     
     const Trace expectedReceivedTrace = TraceBuilder()
-        .port(i_clk).signal( "101010" )
-        .port(o_rx_dv).signal( "001100" ) 
-        .port(o_rx_byte).signal( {0,0xAA,0}).repeatEachStep(2)
-        .port(i_spi_clk).signal( "000000")
-        .port(i_spi_cs_n).signal( "000000" )
-        .port(o_spi_cipo).signal( "111111" )    // note: signal is hi because last bit of 0xAA is hi
-        .port(i_spi_copi).signal( "000000" );
+        .port(i_clk).signal( "1010" )
+        .port(o_rx_dv).signal( "1100" ) 
+        .port(o_rx_byte).signal( {0xAA,0}).repeatEachStep(2)
+        .port(i_spi_clk).signal( "0000")
+        .port(i_spi_cs_n).signal( "0000" )
+        .port(o_spi_cipo).signal( "1111" )    // note: signal is hi because last bit of 0xAA is hi
+        .port(i_spi_copi).signal( "0000" );
     
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedReceiveTrace + expectedReceivedTrace));
 }
