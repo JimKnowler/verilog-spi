@@ -29,40 +29,13 @@ Test Driven Implementation of Serial Peripheral Interface (SPI) protocol in Veri
 While standing in project's root directory, use Bazel to build the test target:
 
 ```
-$ bazel build //spi:test
+$ bazel build //spi:test --incompatible_require_linker_input_cc_api=false
 ```
 
 The test executable can be run from the 'bazel-bin' output directory with:
 
 ```
 $ ./bazel-bin/spi/test
-```
-
-# Build & Run Unit Tests for gtestverilog
-
-While standing in project's root directory, use Bazel to build the test target:
-
-```
-$ bazel build //gtestverilog:test
-```
-
-The test executable can be run from the 'bazel-bin' output directory with:
-
-```
-$ ./bazel-bin/gtestverilog/test
-```
-# Build & Run 'counter' Example for gtestverilog
-
-While standing in project's root directory, use Bazel to build the test target:
-
-```
-$ bazel build //gtestverilog:example
-```
-
-The test executable can be run from the 'bazel-bin' output directory with:
-
-```
-$ ./bazel-bin/gtestverilog/example
 ```
 
 # NOTES
