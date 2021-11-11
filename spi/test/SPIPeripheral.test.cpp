@@ -350,7 +350,9 @@ TEST_F(SPIPeripheral, ShouldObserveChipSelect) {
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedReceiveTrace + expectedReceivedTrace));
 }
 
-// todo: signal immediately on CIPO when CS goes low? when data is setup before/after CS?
+
+
+
 
 // TODO: parameterised MODE
 //       -> via parameter to verilog module
