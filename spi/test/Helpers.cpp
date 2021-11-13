@@ -71,13 +71,14 @@ namespace testing {
     void Helpers::peripheralSimulateReceiveByte(
         spiperipheraltestbench::SPIPeripheralTestBench& testBench,
         uint8_t byte,
+        uint8_t numBits,
         uint32_t numStepsSetup,
         uint32_t numStepsValid,
         uint32_t numStepsPadding
     ) {
         auto& core = testBench.core();
 
-        for (uint32_t index = 0; index < 8; index++) {
+        for (uint32_t index = 0; index < numBits; index++) {
             uint32_t cumulativeSteps = 0;
             
             core.i_spi_copi = 0;

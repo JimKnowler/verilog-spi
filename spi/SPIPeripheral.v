@@ -71,9 +71,9 @@ begin
 end
 
 // SPI clock domain - send serialised data on CIPO
-always @(posedge i_spi_clk or negedge i_reset_n)
+always @(posedge i_spi_clk or negedge i_reset_n or posedge i_spi_cs_n)
 begin
-    if (!i_reset_n)
+    if ((!i_reset_n) || (i_spi_cs_n == 1'b1))
     begin
         r_active <= 0;
         r_tx_bit_index <= 3'b111;
@@ -93,9 +93,9 @@ begin
 end
 
 // SPI clock domain - read serialised data from COPI
-always @(negedge i_spi_clk or negedge i_reset_n)
+always @(negedge i_spi_clk or negedge i_reset_n or posedge i_spi_cs_n)
 begin
-    if (!i_reset_n)
+    if ((!i_reset_n) || (i_spi_cs_n == 1'b1))
     begin
         r_rx_bit_index <= 3'b111;
         r_rx_byte <= 8'h00;

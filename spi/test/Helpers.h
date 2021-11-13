@@ -31,6 +31,7 @@ namespace testing {
         static void peripheralSimulateReceiveByte(
             spiperipheraltestbench::SPIPeripheralTestBench& testBench,
             uint8_t byte,
+            uint8_t numBits = 8,
             uint32_t numStepsSetup = 0,
             uint32_t numStepsValid = 4,
             uint32_t numStepsPadding = 0
