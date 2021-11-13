@@ -25,7 +25,8 @@ module SPIPeripheralEcho(
     output [7:0]    o_debug_rx_byte,
     output          o_debug_rx_dv,
     output          o_debug_tx_dv,
-    output [7:0]    o_debug_tx_byte
+    output [7:0]    o_debug_tx_byte,
+    output [7:0]    o_debug_tx_byte_buffered
 );
 
 wire [7:0] w_rx_byte;
@@ -53,7 +54,8 @@ SPIPeripheral spi(
     .o_debug_rx_buffered_0(o_debug_rx_buffered_0),
     .o_debug_rx_bit_index(o_debug_rx_bit_index),
     .o_debug_tx_bit_index(o_debug_tx_bit_index),
-    .o_debug_active(o_debug_active)
+    .o_debug_active(o_debug_active),
+    .o_debug_tx_byte_buffered(o_debug_tx_byte_buffered)
 );
 
 always @(posedge i_clk or negedge i_reset_n)

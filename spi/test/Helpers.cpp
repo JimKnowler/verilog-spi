@@ -148,6 +148,9 @@ namespace testing {
             }
         }
 
+        // PeripheralEcho requires a couple of FPGA clock cycles to setup RX + TX data
+        testBench.tick(4);
+
         return tx;
     }
 }

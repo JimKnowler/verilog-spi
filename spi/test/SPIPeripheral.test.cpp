@@ -311,7 +311,7 @@ TEST_F(SPIPeripheral, ShouldSendAndReceiveMultipleBytes) {
         .port(o_rx_byte).signal( {0xAA,0}).repeatEachStep(2)
         .port(i_spi_clk).signal( "0000")
         .port(i_spi_cs_n).signal( "0000" )
-        .port(o_spi_cipo).signal( "1111" )    // note: signal is hi because last bit of 0xAA is hi
+        .port(o_spi_cipo).signal( "1111" )    // note: signal is hi because last bit of 0x55 is hi
         .port(i_spi_copi).signal( "0000" );
     
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedReceiveTrace + expectedReceivedTrace));
@@ -385,15 +385,49 @@ TEST_F(SPIPeripheral, ShouldResetWhenChipSelectGoesHigh) {
         .port(o_rx_byte).signal( {0xAA,0}).repeatEachStep(2)
         .port(i_spi_clk).signal( "0000")
         .port(i_spi_cs_n).signal( "0000" )
-        .port(o_spi_cipo).signal( "1111" )    // note: signal is hi because last bit of 0xAA is hi
+        .port(o_spi_cipo).signal( "1111" )    // note: signal is hi because last bit of 0x55 is hi
         .port(i_spi_copi).signal( "0000" );
     
     EXPECT_THAT(testBench.trace, MatchesTrace(expectedReceiveTrace + expectedReceivedTrace));
 }
 
+TEST_F(SPIPeripheral, ShouldClearTXBufferAfterSendIsComplete) {
+    // receive and send byte
+    testBench.core().i_spi_cs_n = 0;
+    Helpers::peripheralSetupSendByte(testBench, 0x12);    
+    Helpers::peripheralSimulateReceiveByte(testBench, 0x34);
+    
+    testBench.tick();
+    testBench.trace.clear();
 
-// TODO: clear tx buffer after sending is complete 
-//       (avoid sending the same value multiple times which confuses profiles, should revert to 0)
+    // receive a byte (without setting up a send)
+    Helpers::peripheralSimulateReceiveByte(testBench, 0xAA);
+    
+    const Trace expectedReceiveTrace = TraceBuilder()
+        .port(i_clk).signal( "1010" )
+        .port(o_rx_dv).signal( "0000" )
+        .port(o_rx_byte).signal( {0,0,0,0})
+        .port(i_spi_clk).signal( "1100")
+        .port(i_spi_cs_n).signal( "0000" )
+        .allPorts().repeat(8)
+        .port(o_spi_cipo).signal( "00000000" ).repeat(4)
+        .port(i_spi_copi).signal( "11110000" ).repeat(4);
+    
+    // receive o_rx_dv & o_rx_byte
+    testBench.tick(2);
+    
+    const Trace expectedReceivedTrace = TraceBuilder()
+        .port(i_clk).signal( "1010" )
+        .port(o_rx_dv).signal( "1100" ) 
+        .port(o_rx_byte).signal( {0xAA,0}).repeatEachStep(2)
+        .port(i_spi_clk).signal( "0000")
+        .port(i_spi_cs_n).signal( "0000" )
+        .port(o_spi_cipo).signal( "0000" )                      // should be 0, because we didn't setup a send byte
+        .port(i_spi_copi).signal( "0000" );
+    
+    EXPECT_THAT(testBench.trace, MatchesTrace(expectedReceiveTrace + expectedReceivedTrace));
+}
+
 
 // TODO: parameterised MODE
 //       -> via parameter to verilog module
